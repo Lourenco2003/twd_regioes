@@ -14,7 +14,7 @@ Alternativamente, com Python instalado, executar na pasta do projeto:
 python3 -m http.server 8000
 ```
 
-Abrir `http://localhost:8000`. Usar um servidor HTTP: não abrir com `file://`, porque o JavaScript usa módulos. É necessária ligação à Internet para as APIs e para o Bootstrap. Não é necessário instalar dependências da aplicação. Existe CSS local de apoio à apresentação caso a CDN falhe.
+Abrir `http://localhost:8000`. Recomenda-se um servidor HTTP. Os scripts usam `defer`, sem módulos, para também carregarem ao abrir o HTML diretamente; nesse caso, o acesso às APIs depende das restrições do navegador para páginas `file://`. É necessária ligação à Internet para as APIs e para o Bootstrap. Não é necessário instalar dependências da aplicação. Existe CSS local de apoio à apresentação caso a CDN falhe.
 
 ## Organização
 
@@ -55,3 +55,7 @@ Os testes opcionais documentados em `tests/README.md` usam respostas simuladas e
 ### Resultado da validação nesta entrega
 
 Sete testes Playwright passaram. O fluxo com respostas reais apresentou os 12 locais e os dados meteorológicos, marítimos e oficiais da Figueira da Foz. O Chromium do ambiente não reconheceu a autoridade certificadora do proxy; nessa verificação funcional, os pedidos HTTPS reais foram encaminhados pelo transporte Python com validação TLS ativa. Não se desativou a verificação de certificados. A execução direta no navegador do utilizador continua dependente da sua ligação e da política CORS dos fornecedores.
+
+## Se o catálogo não carregar
+
+Atualizar todos os ficheiros do repositório e recarregar com Ctrl+F5. Se abriste o HTML diretamente, experimentar Live Server. Se aparecer uma mensagem de erro, confirmar o acesso a https://api.ipma.pt/open-data/sea-locations.json e verificar a consola do navegador (F12). A aplicação precisa de JavaScript e acesso à Internet; não inclui uma lista fixa de locais de reserva.

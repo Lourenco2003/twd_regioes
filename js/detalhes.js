@@ -1,5 +1,7 @@
-import { obterJSON, formatarValor, grausParaDirecao, estadoTempo, indiceHoraAtual,
-    formatarData, mostrarCarregamento, mostrarErro, obterPrevisaoIPMA } from './utils.js';
+(() => {
+'use strict';
+const { obterJSON, formatarValor, grausParaDirecao, estadoTempo, indiceHoraAtual,
+    formatarData, mostrarCarregamento, mostrarErro, obterPrevisaoIPMA } = window.MarUtils;
 const parametros = new URLSearchParams(location.search);
 const latTexto = parametros.get('lat');
 const lonTexto = parametros.get('lon');
@@ -140,3 +142,5 @@ if (!latTexto?.trim() || !lonTexto?.trim() || !Number.isFinite(latitude) || !Num
     document.querySelector('#consultar-ipma').addEventListener('click', consultarIPMA);
     carregarTudo();
 }
+
+})();

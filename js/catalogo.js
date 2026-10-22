@@ -1,4 +1,6 @@
-import { API_IPMA, obterJSON, mostrarCarregamento, mostrarErro } from './utils.js';
+(() => {
+'use strict';
+const { API_IPMA, obterJSON, mostrarCarregamento, mostrarErro } = window.MarUtils;
 const lista = document.querySelector('#regioes');
 const estado = document.querySelector('#estado');
 const pesquisa = document.querySelector('#pesquisa');
@@ -68,3 +70,5 @@ async function carregarRegioes() {
 }
 pesquisa.addEventListener('input', apresentarRegioes);
 carregarRegioes();
+
+})();

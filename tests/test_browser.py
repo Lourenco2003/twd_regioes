@@ -116,15 +116,22 @@ class Aplicacao(unittest.TestCase):
         self.assertEqual(len(pedidos), 2)
 
     def test_utilitarios(self):
-        self.page.goto(BASE)
+        self.page.goto(BASE + '/catalogo.html')
         resultado = self.page.evaluate('''async () => {
-            const u = await import('/js/utils.js');
+            const u = window.MarUtils;
             return [u.grausParaDirecao(360), u.grausParaDirecao(-45),
                 u.grausParaDirecao(null), u.formatarValor(null), u.formatarValor(0, 'mm'),
                 u.indiceHoraAtual([100, 3700, 7300], 4000),
                 u.indiceHoraAtual([100], 10000), u.estadoTempo(null)];
         }''')
         self.assertEqual(resultado, ['N', 'NW', 'N/D', 'N/D', '0 mm', 1, -1, 'N/D'])
+
+    def test_navegador_sem_abortsignal_timeout(self):
+        self.page.add_init_script('AbortSignal.timeout = undefined;')
+        self.page.goto(BASE + '/catalogo.html')
+        self.page.locator('.region-card').first.wait_for()
+        self.assertEqual(self.page.locator('.region-card').count(), 2)
+        self.assertEqual(self.page.locator('script[type="module"]').count(), 0)
 
     def test_responsividade(self):
         for largura in [390, 768, 1440]:

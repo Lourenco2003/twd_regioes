@@ -1,26 +1,34 @@
-export const API_IPMA = 'https://api.ipma.pt/open-data/';
-export async function obterJSON(url) {
-    const resposta = await fetch(url, { signal: AbortSignal.timeout(20000) });
-    if (!resposta.ok) {
-        const erro = new Error(`Erro ao obter dados (HTTP ${resposta.status}).`);
-        erro.status = resposta.status;
-        throw erro;
+(() => {
+'use strict';
+const API_IPMA = 'https://api.ipma.pt/open-data/';
+async function obterJSON(url) {
+    const controlador = new AbortController();
+    const limite = setTimeout(() => controlador.abort(), 20000);
+    try {
+        const resposta = await fetch(url, { signal: controlador.signal });
+        if (!resposta.ok) {
+            const erro = new Error(`Erro ao obter dados (HTTP ${resposta.status}).`);
+            erro.status = resposta.status;
+            throw erro;
+        }
+        return await resposta.json();
+    } finally {
+        clearTimeout(limite);
     }
-    return resposta.json();
 }
-export function numeroDisponivel(valor) {
+function numeroDisponivel(valor) {
     return typeof valor === 'number' && Number.isFinite(valor);
 }
-export function formatarValor(valor, unidade = '') {
+function formatarValor(valor, unidade = '') {
     if (!numeroDisponivel(valor)) return 'N/D';
     return `${new Intl.NumberFormat('pt-PT', { maximumFractionDigits: 1 }).format(valor)}${unidade ? ` ${unidade}` : ''}`;
 }
-export function grausParaDirecao(graus) {
+function grausParaDirecao(graus) {
     if (!numeroDisponivel(graus)) return 'N/D';
     const direcoes = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
     return direcoes[Math.round(((graus % 360) + 360) % 360 / 45) % 8];
 }
-export function estadoTempo(codigo) {
+function estadoTempo(codigo) {
     const estados = {
         0: 'Céu limpo', 1: 'Predominantemente limpo', 2: 'Parcialmente nublado',
         3: 'Céu encoberto', 45: 'Nevoeiro', 48: 'Nevoeiro com geada',
@@ -36,7 +44,7 @@ export function estadoTempo(codigo) {
     return numeroDisponivel(codigo) ? (estados[codigo] || 'N/D') : 'N/D';
 }
 // Timestamps Unix evitam diferenças entre os fusos do navegador e da região.
-export function indiceHoraAtual(tempos, agora = Date.now() / 1000) {
+function indiceHoraAtual(tempos, agora = Date.now() / 1000) {
     if (!Array.isArray(tempos)) return -1;
     let indice = -1;
     tempos.forEach((tempo, i) => {
@@ -45,7 +53,7 @@ export function indiceHoraAtual(tempos, agora = Date.now() / 1000) {
     });
     return indice;
 }
-export function formatarData(tempo, fuso = 'Europe/Lisbon') {
+function formatarData(tempo, fuso = 'Europe/Lisbon') {
     if (!numeroDisponivel(tempo)) return 'N/D';
     try {
         return new Intl.DateTimeFormat('pt-PT', {
@@ -53,14 +61,14 @@ export function formatarData(tempo, fuso = 'Europe/Lisbon') {
         }).format(new Date(tempo * 1000));
     } catch { return 'N/D'; }
 }
-export function mostrarCarregamento(elemento) {
+function mostrarCarregamento(elemento) {
     elemento.replaceChildren();
     const texto = document.createElement('p');
     texto.className = 'loading-panel';
     texto.textContent = 'A carregar dados...';
     elemento.append(texto);
 }
-export function mostrarErro(elemento, repetir) {
+function mostrarErro(elemento, repetir) {
     elemento.replaceChildren();
     const aviso = document.createElement('div');
     aviso.className = 'error-panel';
@@ -75,7 +83,10 @@ export function mostrarErro(elemento, repetir) {
     }
     elemento.append(aviso);
 }
-export async function obterPrevisaoIPMA(dia = 0) {
+async function obterPrevisaoIPMA(dia = 0) {
     if (![0, 1, 2].includes(Number(dia))) throw new Error('Dia inválido.');
     return obterJSON(`${API_IPMA}forecast/oceanography/daily/hp-daily-sea-forecast-day${Number(dia)}.json`);
 }
+
+window.MarUtils = Object.freeze({ API_IPMA, obterJSON, numeroDisponivel, formatarValor, grausParaDirecao, estadoTempo, indiceHoraAtual, formatarData, mostrarCarregamento, mostrarErro, obterPrevisaoIPMA });
+})();

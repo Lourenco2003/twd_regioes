@@ -28,7 +28,7 @@ Abrir `http://localhost:8000`. Recomenda-se um servidor HTTP. Os scripts usam `d
 
 ## Dados e decisões
 
-**IPMA:** os locais, coordenadas, `globalIdLocal`, `idLocal` e `idAreaAviso` vêm da API. Não existe lista fixa nem dados demonstrativos na aplicação. A secção opcional de detalhes consulta as previsões marítimas oficiais de hoje, amanhã ou depois de amanhã e apresenta os registos correspondentes com os nomes originais dos campos, sem os confundir com as observações horárias.
+**IPMA:** os locais, coordenadas, `globalIdLocal`, `idLocal` e `idAreaAviso` vêm da API. Não existe lista fixa nem dados demonstrativos na aplicação. A secção opcional de detalhes consulta as previsões marítimas oficiais de hoje, amanhã ou depois de amanhã e apresenta os registos correspondentes em cartões com rótulos em português, unidades e intervalos de mínimo a máximo, sem os confundir com as observações horárias.
 
 **Open-Meteo Weather:** temperatura, humidade, precipitação, código meteorológico WMO, velocidade/direção do vento e rajadas em `current`. Velocidade em km/h.
 

@@ -42,7 +42,7 @@ class Aplicacao(unittest.TestCase):
                 {'local': 'Figueira da Foz, Costa', 'latitude': '40.1417', 'longitude': '-8.8783', 'globalIdLocal': 1060526, 'idLocal': 302},
                 {'local': 'São Miguel, Costa', 'latitude': '37.7', 'longitude': '-25.6', 'idRegiao': 3}])
         else:
-            self.responder(rota, {'data': [{'globalIdLocal': 1060526, 'waveHighMin': 1}]})
+            self.responder(rota, {'forecastDate': '2026-10-22', 'data': [{'globalIdLocal': 1060526, 'waveHighMin': '2.2', 'waveHighMax': '2.7', 'wavePeriodMin': '6.2', 'wavePeriodMax': '9.0', 'totalSeaMin': 2, 'totalSeaMax': 2.5, 'sstMin': '14.5', 'sstMax': '14.7', 'predWaveDir': 'NW'}]})
 
     def tempo(self, rota):
         self.responder(rota, {'timezone': 'Europe/Lisbon', 'current': {
@@ -74,7 +74,31 @@ class Aplicacao(unittest.TestCase):
         self.assertNotIn('9 m', self.page.locator('#mar').inner_text())
         self.page.locator('summary').click()
         self.page.locator('#consultar-ipma').click()
-        self.page.wait_for_function("document.querySelector('#dados-ipma').textContent.includes('waveHighMin')")
+        self.page.wait_for_function("document.querySelector('#dados-ipma').textContent.includes('2,2 m – 2,7 m')")
+        texto = self.page.locator('#dados-ipma').inner_text()
+        self.assertIn('22/10/2026', texto)
+        self.assertIn('14,5 °C – 14,7 °C', texto)
+        self.assertIn('6,2 s – 9 s', texto)
+        self.assertIn('NW', texto)
+        self.assertNotIn('globalIdLocal', texto)
+
+    def test_ipma_dias_e_valores_ausentes(self):
+        pedidos = []
+        def ipma(rota):
+            pedidos.append(rota.request.url)
+            self.responder(rota, {'data': [{'globalIdLocal': 1060526, 'waveHighMin': '', 'waveHighMax': None, 'sstMin': '0', 'sstMax': 'texto'}]})
+        self.page.route('https://api.ipma.pt/**', ipma)
+        self.page.goto(BASE + DETALHES)
+        self.page.locator('summary').click()
+        self.page.locator('#dia-ipma').select_option('1')
+        self.page.wait_for_function("document.querySelector('#dados-ipma .ipma-card') !== null")
+        texto = self.page.locator('#dados-ipma').inner_text()
+        self.assertIn('N/D – N/D', texto)
+        self.assertIn('0 °C – N/D', texto)
+        self.assertIn('day1.json', pedidos[-1])
+        self.page.locator('#dia-ipma').select_option('2')
+        self.page.wait_for_function("!document.querySelector('#dia-ipma').disabled")
+        self.assertIn('day2.json', pedidos[-1])
 
     def test_erros_independentes_e_repeticao(self):
         self.page.route('https://api.open-meteo.com/**', lambda rota: self.responder(rota, {}, 503))

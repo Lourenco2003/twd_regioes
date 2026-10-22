@@ -106,24 +106,59 @@ async function carregarTudo() {
     await Promise.allSettled([carregarTempo(), carregarMar()]);
     atualizar.disabled = false;
 }
+// O IPMA devolve várias medidas como texto; valores vazios continuam a ser N/D.
+function valorIPMA(valor) {
+    if (typeof valor === 'string') {
+        if (!valor.trim()) return null;
+        return Number(valor);
+    }
+    return typeof valor === 'number' ? valor : null;
+}
+function intervaloIPMA(minimo, maximo, unidade) {
+    return `${formatarValor(valorIPMA(minimo), unidade)} – ${formatarValor(valorIPMA(maximo), unidade)}`;
+}
+function apresentarIPMA(painel, dados, registos) {
+    painel.replaceChildren();
+    if (!registos.length) {
+        painel.append(elemento('p', 'data-note', 'N/D — Não existe previsão IPMA correspondente a este local.'));
+        return;
+    }
+    const data = typeof dados.forecastDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dados.forecastDate)
+        ? dados.forecastDate.split('-').reverse().join('/') : 'N/D';
+    painel.append(elemento('p', 'ipma-date', `Previsão para ${data} · Fonte: IPMA`));
+    registos.forEach(registo => {
+        const cartao = elemento('div', 'card ipma-card', '');
+        cartao.append(metricas([
+            ['Altura das ondas (mín. – máx.)', intervaloIPMA(registo.waveHighMin, registo.waveHighMax, 'm')],
+            ['Período das ondas (mín. – máx.)', intervaloIPMA(registo.wavePeriodMin, registo.wavePeriodMax, 's')],
+            ['Mar total (mín. – máx.)', intervaloIPMA(registo.totalSeaMin, registo.totalSeaMax, 'm')],
+            ['Direção predominante das ondas', typeof registo.predWaveDir === 'string' && registo.predWaveDir.trim() ? registo.predWaveDir : 'N/D'],
+            ['Temperatura da água (mín. – máx.)', intervaloIPMA(registo.sstMin, registo.sstMax, '°C')]
+        ]));
+        painel.append(cartao);
+    });
+}
 async function consultarIPMA() {
     const painel = document.querySelector('#dados-ipma');
     const botao = document.querySelector('#consultar-ipma');
+    const dia = document.querySelector('#dia-ipma');
     mostrarCarregamento(painel);
     botao.disabled = true;
+    dia.disabled = true;
     try {
-        const dados = await obterPrevisaoIPMA(document.querySelector('#dia-ipma').value);
+        const dados = await obterPrevisaoIPMA(dia.value);
         if (!Array.isArray(dados.data)) throw new Error('Formato inesperado do IPMA.');
         const registos = dados.data.filter(registo =>
             (parametros.get('id') && String(registo.globalIdLocal) === parametros.get('id')) ||
             (parametros.get('idLocal') && String(registo.idLocal) === parametros.get('idLocal')));
-        painel.replaceChildren(elemento('pre', '', registos.length
-            ? JSON.stringify({ dataPrevisao: dados.forecastDate ?? dados.dataUpdate ?? null, data: registos }, null, 2)
-            : 'N/D — Não existe previsão IPMA correspondente a este local.'));
+        apresentarIPMA(painel, dados, registos);
     } catch (erro) {
         console.error('IPMA:', erro);
         mostrarErro(painel, consultarIPMA);
-    } finally { botao.disabled = false; }
+    } finally {
+        botao.disabled = false;
+        dia.disabled = false;
+    }
 }
 if (!latTexto?.trim() || !lonTexto?.trim() || !Number.isFinite(latitude) || !Number.isFinite(longitude) ||
     latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
@@ -140,6 +175,7 @@ if (!latTexto?.trim() || !lonTexto?.trim() || !Number.isFinite(latitude) || !Num
     document.querySelector('#oficial').hidden = !(parametros.get('id') || parametros.get('idLocal'));
     atualizar.addEventListener('click', carregarTudo);
     document.querySelector('#consultar-ipma').addEventListener('click', consultarIPMA);
+    document.querySelector('#dia-ipma').addEventListener('change', consultarIPMA);
     carregarTudo();
 }
 

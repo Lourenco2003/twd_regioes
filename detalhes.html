@@ -36,16 +36,35 @@
         </header>
         <main class="container page-main details-page">
             <a class="back-link" href="catalogo.html">← Todas as regiões</a>
-            <div class="detail-intro">
-                <div>
-                    <p class="eyebrow">O TEU PRÓXIMO HORIZONTE</p>
+            <!-- Apresentação da região: fotografia com tamanho uniforme e texto local. -->
+            <section class="region-intro" aria-labelledby="nome-local">
+                <figure class="region-figure">
+                    <img
+                        id="imagem-regiao"
+                        src="images/hero.svg"
+                        alt="Ilustração da costa portuguesa"
+                        width="480"
+                        height="360"
+                        decoding="async"
+                    />
+                    <figcaption>Imagem ilustrativa da região</figcaption>
+                    <p id="erro-imagem-regiao" class="region-image-error" hidden>
+                        Fotografia indisponível.
+                    </p>
+                </figure>
+                <div class="region-presentation">
+                    <p class="eyebrow">DESCOBRE A COSTA PORTUGUESA</p>
                     <h1 id="nome-local">Condições da costa</h1>
-                    <p id="coordenadas" class="lead"></p>
+                    <p id="zona-regiao" class="region-location"></p>
+                    <p id="descricao-regiao" class="region-description">
+                        Escolhe uma região no catálogo para conhecer a sua costa.
+                    </p>
+                    <p id="coordenadas" class="region-coordinates"></p>
+                    <button id="atualizar" class="btn btn-outline-ocean" type="button">
+                        ↻ Atualizar dados
+                    </button>
                 </div>
-                <button id="atualizar" class="btn btn-outline-ocean" type="button">
-                    ↻ Atualizar dados
-                </button>
-            </div>
+            </section>
             <p id="erro-local" class="alert alert-warning" hidden></p>
             <!-- Atmosfera, mar Open-Meteo e previsão oficial IPMA. -->
             <div class="conditions-stack">
@@ -133,6 +152,7 @@
                 </span>
             </div>
         </footer>
+        <script defer src="js/regioes.js"></script>
         <script defer src="js/utils.js"></script>
         <script defer src="js/detalhes.js"></script>
     </body>

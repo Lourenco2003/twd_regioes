@@ -229,6 +229,53 @@ class Aplicacao(unittest.TestCase):
         imagem.evaluate('(img) => img.decode()')
         self.assertTrue(imagem.evaluate('(img) => img.naturalWidth > 0'))
 
+    def test_apresentacao_das_doze_regioes(self):
+        regioes = [
+            ('Faro', 'surf_faro.jpg'),
+            ('Figueira da Foz', 'surf_figueira-da-foz.jpg'),
+            ('Funchal', 'surf_funchal.jpg'),
+            ('Horta', 'surf_horta.jpg'),
+            ('Lisboa', 'surf_lisboa.jpg'),
+            ('Ponta Delgada', 'surf_ponta_delgada.jpg'),
+            ('Porto', 'surf_porto.jpg'),
+            ('Porto Santo', 'surf_porto_santo.jpg'),
+            ('Sagres', 'surf_sagres.jpg'),
+            ('Santa Cruz das Flores', 'surf_santa_cruz_das_flores.jpg'),
+            ('Sines', 'surf_sines.jpg'),
+            ('Viana do Castelo', 'surf_viana_do_castelo.jpg'),
+        ]
+        from urllib.parse import urlencode
+        self.page.set_viewport_size({'width': 1440, 'height': 1000})
+        textos = set()
+        for nome, ficheiro in regioes:
+            self.page.goto(BASE + '/detalhes.html?' + urlencode({'lat': 40, 'lon': -9, 'local': nome + ', costa'}))
+            imagem = self.page.locator('#imagem-regiao')
+            imagem.evaluate('(img) => img.decode()')
+            self.assertEqual(imagem.get_attribute('src'), 'images/' + ficheiro)
+            self.assertEqual(self.page.locator('#nome-local').inner_text(), nome)
+            texto = self.page.locator('#descricao-regiao').inner_text()
+            self.assertGreater(len(texto), 100)
+            textos.add(texto)
+            self.assertTrue(self.page.locator('#zona-regiao').inner_text())
+            caixa = imagem.bounding_box()
+            self.assertEqual((round(caixa['width']), round(caixa['height'])), (480, 360))
+            self.assertEqual(imagem.evaluate('(img) => getComputedStyle(img).objectFit'), 'cover')
+        self.assertEqual(len(textos), 12)
+        for largura in [320, 390, 768]:
+            self.page.set_viewport_size({'width': largura, 'height': 900})
+            self.assertTrue(self.page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
+            imagem = self.page.locator('#imagem-regiao').bounding_box()
+            self.assertAlmostEqual(imagem['width'] / imagem['height'], 4/3, places=2)
+
+    def test_fotografia_regiao_indisponivel(self):
+        self.page.route('**/images/surf_figueira-da-foz.jpg', lambda rota: rota.abort())
+        self.page.goto(BASE + DETALHES)
+        self.page.locator('#erro-imagem-regiao:not([hidden])').wait_for()
+        self.assertIn('Mondego', self.page.locator('#descricao-regiao').inner_text())
+        self.page.wait_for_function("document.querySelector('#tempo').textContent.includes('18 °C')")
+        caixa = self.page.locator('.region-figure').bounding_box()
+        self.assertGreater(caixa['height'], 0)
+
     def test_responsividade(self):
         for largura in [390, 768, 1440]:
             self.page.set_viewport_size({'width': largura, 'height': 900})

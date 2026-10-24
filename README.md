@@ -21,6 +21,7 @@ Abrir `http://localhost:8000`. É necessária Internet para consultar as APIs e 
 - `detalhes.html` e `js/detalhes.js`: atmosfera, mar Open-Meteo e previsão oficial do IPMA.
 - `galeria.html` e `js/galeria.js`: fotografias com setas, indicadores e navegação pelo teclado.
 - `js/utils.js`: pedidos HTTP, formatação e mensagens de carregamento e erro.
+- `js/regioes.js`: textos de apresentação, zona geográfica e fotografias das 12 regiões.
 - `css/style.css`: estilos por secção e adaptações a diferentes ecrãs.
 - `images/`: fotografias e ícone locais.
 - `tests/`: testes opcionais de desenvolvimento; instruções em `tests/README.md`.
@@ -37,7 +38,7 @@ Os pedidos têm um limite de 20 segundos. Se a API marítima rejeitar o pedido c
 
 ## Fotografias e galeria
 
-A tabela `imagensRegioes`, em `js/catalogo.js`, associa os nomes às fotografias em `images/`. Para trocar uma foto, substituir o ficheiro ou alterar a entrada na tabela. Se uma imagem falhar, o cartão mantém a ilustração alternativa em CSS.
+A lista de apresentação em `js/regioes.js` associa os nomes às fotografias em `images/`, à zona geográfica e a um texto breve. É usada pelo catálogo e pelos detalhes; para alterar um texto ou uma foto, editar a entrada da região nesse ficheiro. Se uma imagem falhar, o cartão mantém a ilustração alternativa em CSS.
 
 As fotografias da galeria são definidas em `galeria.html`. O carrossel não avança automaticamente: usa as setas, os indicadores ou o teclado quando tem foco. Todas as imagens ocupam a mesma área, até **1200 × 600 px** no computador e proporção **4:3** no telemóvel. `object-fit: cover` recorta sem deformar.
 
@@ -48,3 +49,5 @@ As fotografias da galeria são definidas em `galeria.html`. O carrossel não ava
 - [Bootstrap 5.3.3](https://getbootstrap.com/): estilos carregados de `cdn.jsdelivr.net`, licença MIT.
 
 Respeitar as condições de utilização e os limites dos fornecedores. As previsões não substituem os avisos oficiais ou a avaliação das condições locais.
+
+Nos detalhes, cada região apresenta a fotografia à esquerda e o texto à direita. As fotografias usam a mesma área de **480 × 360 px** no computador, com proporção **4:3** adaptada a ecrãs menores. `object-fit: cover` recorta sem deformar. Os textos são descrições gerais da região, independentes das previsões das APIs.

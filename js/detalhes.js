@@ -37,6 +37,30 @@
         'sea_surface_temperature',
     ];
 
+    // Apresenta o texto e a fotografia antes das consultas meteorológicas.
+    function apresentarRegiao() {
+        const regiao = window.Regioes.obter(local);
+        const imagem = document.querySelector('#imagem-regiao');
+        if (!regiao) {
+            document.querySelector('#descricao-regiao').textContent =
+                'Ainda não existe uma apresentação para esta região. Consulta abaixo as condições do tempo e do mar.';
+            return;
+        }
+        document.querySelector('#zona-regiao').textContent = regiao.zona;
+        document.querySelector('#descricao-regiao').textContent = regiao.descricao;
+        imagem.alt = `Fotografia associada à região de ${regiao.nome}`;
+        // Conserva o espaço da fotografia mesmo que o ficheiro não carregue.
+        imagem.addEventListener(
+            'error',
+            () => {
+                imagem.hidden = true;
+                document.querySelector('#erro-imagem-regiao').hidden = false;
+            },
+            { once: true },
+        );
+        imagem.src = `images/${regiao.imagem}`;
+    }
+
     // Monta a URL com as coordenadas, o fuso local e as opções da consulta.
     function criarURL(base, opcoes) {
         return `${base}?${new URLSearchParams({ latitude, longitude, timezone: 'auto', timeformat: 'unixtime', ...opcoes })}`;
@@ -313,6 +337,7 @@
         document.title = `${local} · Estado do Mar`;
         document.querySelector('#coordenadas').textContent =
             `${latitude}° lat · ${longitude}° lon · Portugal`;
+        apresentarRegiao();
         atualizar.addEventListener('click', carregarTudo);
         document.querySelector('#consultar-ipma').addEventListener('click', consultarIPMA);
         filtrosIPMA.forEach((filtro) =>

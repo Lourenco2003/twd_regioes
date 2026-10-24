@@ -16,26 +16,9 @@
             .toLowerCase();
     }
 
-    // Associa apenas as fotos: a lista de locais continua a vir do IPMA.
-    const imagensRegioes = {
-        faro: 'surf_faro.jpg',
-        'figueira da foz': 'surf_figueira-da-foz.jpg',
-        funchal: 'surf_funchal.jpg',
-        horta: 'surf_horta.jpg',
-        lisboa: 'surf_lisboa.jpg',
-        'ponta delgada': 'surf_ponta_delgada.jpg',
-        porto: 'surf_porto.jpg',
-        'porto santo': 'surf_porto_santo.jpg',
-        sagres: 'surf_sagres.jpg',
-        'santa cruz das flores': 'surf_santa_cruz_das_flores.jpg',
-        sines: 'surf_sines.jpg',
-        'viana do castelo': 'surf_viana_do_castelo.jpg',
-    };
-
     // Escolhe a fotografia local correspondente à região.
     function colocarFotografia(paisagem, regiao) {
-        const nomeRegiao = normalizar(regiao.local.replace(/,\s*Costa\s*$/i, '').trim());
-        const ficheiro = imagensRegioes[nomeRegiao];
+        const ficheiro = window.Regioes.obter(regiao.local)?.imagem;
         if (!ficheiro) return;
         const imagem = document.createElement('img');
         imagem.className = 'region-photo';

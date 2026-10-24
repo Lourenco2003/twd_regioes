@@ -172,7 +172,7 @@ class Aplicacao(unittest.TestCase):
         self.assertEqual(self.page.locator('[data-dia="1"]').get_attribute('aria-pressed'), 'true')
         self.assertEqual(self.page.locator('[data-dia="0"]').get_attribute('aria-pressed'), 'false')
 
-    def test_galeria_navegacao_carrossel_e_miniaturas(self):
+    def test_galeria_navegacao_carrossel_e_indicadores(self):
         self.page.goto(BASE)
         self.page.get_by_role('navigation').get_by_role('link', name='Galeria', exact=True).click()
         self.page.locator('#controlos-galeria:not([hidden])').wait_for()
@@ -197,6 +197,27 @@ class Aplicacao(unittest.TestCase):
         self.page.get_by_role('link', name='Consultar o catálogo').click()
         self.assertTrue(self.page.url.endswith('/catalogo.html'))
         self.assertTrue(self.page.get_by_role('navigation').get_by_role('link', name='Galeria', exact=True).is_visible())
+
+    def test_galeria_dimensoes_uniformes_e_legendas(self):
+        self.page.goto(BASE + '/galeria.html')
+        self.page.locator('#controlos-galeria:not([hidden])').wait_for()
+        for largura in [1440, 390]:
+            self.page.set_viewport_size({'width': largura, 'height': 900})
+            dimensoes = []
+            for indice in range(13):
+                self.page.locator(f'[data-foto="{indice}"]').click()
+                imagem = self.page.locator('.gallery-slide:not([hidden]) > img')
+                imagem.evaluate('(img) => img.decode()')
+                caixa = imagem.bounding_box()
+                dimensoes.append((round(caixa['width']), round(caixa['height'])))
+                self.assertEqual(imagem.evaluate('(img) => getComputedStyle(img).objectFit'), 'cover')
+            self.assertEqual(len(set(dimensoes)), 1)
+            self.assertEqual(dimensoes[0], (1200, 600) if largura == 1440 else (354, 266))
+            imagem = self.page.locator('.gallery-slide:not([hidden]) > img').bounding_box()
+            legenda = self.page.locator('.gallery-slide:not([hidden]) figcaption').bounding_box()
+            self.assertGreaterEqual(legenda['y'], imagem['y'])
+            self.assertLessEqual(legenda['y'] + legenda['height'], imagem['y'] + imagem['height'])
+            self.assertEqual(self.page.locator('.gallery-indicators button[aria-pressed="true"]').count(), 1)
 
     def test_galeria_imagem_indisponivel(self):
         self.page.route('**/images/surf_espinho.jpg', lambda rota: rota.abort())

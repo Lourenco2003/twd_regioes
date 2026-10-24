@@ -8,9 +8,9 @@
 
     // Guarda a região do carrossel para receber as setas do teclado quando tem foco.
     const galeria = document.querySelector('#galeria');
-    // Transforma as figuras e os botões das miniaturas em listas JavaScript.
+    // Transforma as figuras e os botões dos indicadores em listas JavaScript.
     const fotografias = [...document.querySelectorAll('.gallery-slide')];
-    const miniaturas = [...document.querySelectorAll('[data-foto]')];
+    const indicadores = [...document.querySelectorAll('[data-foto]')];
     // Obtém os controlos e a área que anuncia a fotografia selecionada.
     const anterior = document.querySelector('#foto-anterior');
     const seguinte = document.querySelector('#foto-seguinte');
@@ -18,7 +18,7 @@
     // O índice zero corresponde à primeira fotografia: Espinho.
     let indiceAtual = 0;
 
-    // Atualiza a fotografia visível, a seleção das miniaturas e o contador.
+    // Atualiza a fotografia visível, a seleção dos indicadores e o contador.
     function mostrarFotografia(indice) {
         // O módulo permite voltar à primeira fotografia depois da última e vice-versa.
         indiceAtual = (indice + fotografias.length) % fotografias.length;
@@ -26,9 +26,9 @@
         fotografias.forEach((fotografia, posicao) => {
             fotografia.hidden = posicao !== indiceAtual;
         });
-        // Identifica visualmente a miniatura selecionada e atualiza a acessibilidade.
-        miniaturas.forEach((miniatura, posicao) => {
-            miniatura.setAttribute('aria-pressed', String(posicao === indiceAtual));
+        // Identifica visualmente o indicador selecionado e atualiza a acessibilidade.
+        indicadores.forEach((indicador, posicao) => {
+            indicador.setAttribute('aria-pressed', String(posicao === indiceAtual));
         });
         // Lê o nome já presente na legenda, evitando manter outra lista de nomes no JavaScript.
         const local = fotografias[indiceAtual].querySelector('h2').textContent;
@@ -58,10 +58,10 @@
     // Cada clique avança ou recua uma posição, sem abrir outra página.
     anterior.addEventListener('click', () => mostrarFotografia(indiceAtual - 1));
     seguinte.addEventListener('click', () => mostrarFotografia(indiceAtual + 1));
-    // Cada miniatura envia o seu índice, guardado no atributo data-foto do HTML.
-    miniaturas.forEach((miniatura) => {
-        miniatura.addEventListener('click', () =>
-            mostrarFotografia(Number(miniatura.dataset.foto)),
+    // Cada indicador envia o seu índice, guardado no atributo data-foto do HTML.
+    indicadores.forEach((indicador) => {
+        indicador.addEventListener('click', () =>
+            mostrarFotografia(Number(indicador.dataset.foto)),
         );
     });
     // As setas só controlam a galeria quando o foco está no carrossel ou nos seus controlos.
@@ -76,5 +76,4 @@
     // Inicializa o contador antes de revelar os controlos dependentes de JavaScript.
     mostrarFotografia(0);
     document.querySelector('#controlos-galeria').hidden = false;
-    document.querySelector('#selecao-fotos').hidden = false;
 })();

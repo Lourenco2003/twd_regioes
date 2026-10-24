@@ -28,7 +28,7 @@ Abrir `http://localhost:8000`. Recomenda-se um servidor HTTP. Os scripts usam `d
 
 ## Dados e decisões
 
-**IPMA:** os locais, coordenadas, `globalIdLocal`, `idLocal` e `idAreaAviso` vêm da API. Não existe lista fixa nem dados demonstrativos na aplicação. A secção opcional de detalhes consulta as previsões marítimas oficiais de hoje, amanhã ou depois de amanhã e apresenta os registos correspondentes em cartões com rótulos em português, unidades e intervalos de mínimo a máximo, sem os confundir com as observações horárias.
+**IPMA:** os locais, coordenadas, `globalIdLocal`, `idLocal` e `idAreaAviso` vêm da API. Não existe lista fixa nem dados demonstrativos na aplicação. A secção IPMA, apresentada abaixo do mar da Open-Meteo, consulta automaticamente a previsão de hoje e permite selecionar amanhã ou depois de amanhã. Apresenta os registos correspondentes em cartões com rótulos em português, unidades e intervalos de mínimo a máximo, sem os confundir com as observações horárias.
 
 **Open-Meteo Weather:** temperatura, humidade, precipitação, código meteorológico WMO, velocidade/direção do vento e rajadas em `current`. Velocidade em km/h.
 
@@ -59,3 +59,7 @@ Sete testes Playwright passaram. O fluxo com respostas reais apresentou os 12 lo
 ## Se o catálogo não carregar
 
 Atualizar todos os ficheiros do repositório e recarregar com Ctrl+F5. Se abriste o HTML diretamente, experimentar Live Server. Se aparecer uma mensagem de erro, confirmar o acesso a https://api.ipma.pt/open-data/sea-locations.json e verificar a consola do navegador (F12). A aplicação precisa de JavaScript e acesso à Internet; não inclui uma lista fixa de locais de reserva.
+
+## Organização dos detalhes
+
+Atmosfera no topo, mar Open-Meteo Marine a seguir e mar IPMA abaixo. Em ecrãs largos, as medidas aparecem na horizontal; em telemóveis organizam-se em duas colunas. As quatro medidas principais do mar mantêm a mesma ordem nas duas fontes: altura, período, direção e temperatura da água. O IPMA apresenta intervalos diários; a Open-Meteo apresenta a hora atual disponível, pelo que não são previsões para o mesmo período. A escolha do dia altera apenas o IPMA. O botão geral de atualização consulta as três fontes, mantendo o dia selecionado no IPMA.

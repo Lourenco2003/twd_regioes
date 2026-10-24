@@ -72,8 +72,6 @@ class Aplicacao(unittest.TestCase):
         self.assertIn('NW', self.page.locator('#mar').inner_text())
         self.assertIn('N/D', self.page.locator('#mar').inner_text())
         self.assertNotIn('9 m', self.page.locator('#mar').inner_text())
-        self.page.locator('summary').click()
-        self.page.locator('#consultar-ipma').click()
         self.page.wait_for_function("document.querySelector('#dados-ipma').textContent.includes('2,2 m – 2,7 m')")
         texto = self.page.locator('#dados-ipma').inner_text()
         self.assertIn('22/10/2026', texto)
@@ -89,15 +87,16 @@ class Aplicacao(unittest.TestCase):
             self.responder(rota, {'data': [{'globalIdLocal': 1060526, 'waveHighMin': '', 'waveHighMax': None, 'sstMin': '0', 'sstMax': 'texto'}]})
         self.page.route('https://api.ipma.pt/**', ipma)
         self.page.goto(BASE + DETALHES)
-        self.page.locator('summary').click()
-        self.page.locator('#dia-ipma').select_option('1')
-        self.page.wait_for_function("document.querySelector('#dados-ipma .ipma-card') !== null")
+        self.page.wait_for_function("!document.querySelector('[data-dia=\"1\"]').disabled")
+        self.page.locator('[data-dia="1"]').click()
+        self.page.wait_for_function("!document.querySelector('[data-dia=\"1\"]').disabled")
         texto = self.page.locator('#dados-ipma').inner_text()
         self.assertIn('N/D – N/D', texto)
         self.assertIn('0 °C – N/D', texto)
+        self.assertIn('day0.json', pedidos[0])
         self.assertIn('day1.json', pedidos[-1])
-        self.page.locator('#dia-ipma').select_option('2')
-        self.page.wait_for_function("!document.querySelector('#dia-ipma').disabled")
+        self.page.locator('[data-dia="2"]').click()
+        self.page.wait_for_function("!document.querySelector('[data-dia=\"2\"]').disabled")
         self.assertIn('day2.json', pedidos[-1])
 
     def test_erros_independentes_e_repeticao(self):
@@ -156,6 +155,22 @@ class Aplicacao(unittest.TestCase):
         self.page.locator('.region-card').first.wait_for()
         self.assertEqual(self.page.locator('.region-card').count(), 2)
         self.assertEqual(self.page.locator('script[type="module"]').count(), 0)
+
+    def test_ordem_horizontal_e_ipma_automatico(self):
+        self.page.set_viewport_size({'width': 1440, 'height': 1000})
+        self.page.goto(BASE + DETALHES)
+        self.page.locator('#dados-ipma .comparison-metrics').wait_for()
+        ordem = self.page.evaluate("""() => ['#tempo', '#mar', '#oficial'].map(seletor => document.querySelector(seletor).getBoundingClientRect().top)""")
+        self.assertLess(ordem[0], ordem[1])
+        self.assertLess(ordem[1], ordem[2])
+        for seletor in ['#tempo .metrics', '#mar .comparison-metrics', '#dados-ipma .comparison-metrics']:
+            topos = self.page.locator(seletor + ' > div').evaluate_all('(itens) => itens.map(item => item.getBoundingClientRect().top)')
+            self.assertLess(max(topos) - min(topos), 2)
+        self.assertEqual(self.page.locator('[data-dia="0"]').get_attribute('aria-pressed'), 'true')
+        self.page.locator('[data-dia="1"]').click()
+        self.page.wait_for_function("!document.querySelector('[data-dia=\"1\"]').disabled")
+        self.assertEqual(self.page.locator('[data-dia="1"]').get_attribute('aria-pressed'), 'true')
+        self.assertEqual(self.page.locator('[data-dia="0"]').get_attribute('aria-pressed'), 'false')
 
     def test_responsividade(self):
         for largura in [390, 768, 1440]:

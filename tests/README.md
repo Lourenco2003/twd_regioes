@@ -13,4 +13,4 @@ Com o servidor da aplicação ativo na porta 8000 (`python3 -m http.server 8000`
 python3 -m unittest discover -s tests -v
 ```
 
-As respostas IPMA/Open-Meteo são simuladas exclusivamente nos testes. Verificam navegação, pesquisa, hora selecionada, valores ausentes, direções, falhas independentes, repetição, fallback marítimo, parâmetros inválidos e ausência de overflow em ecrãs de 390, 768 e 1440 px. A CDN é bloqueada nos testes para verificar também o CSS de apoio. Não comprovam acesso às APIs reais.
+As respostas IPMA/Open-Meteo são simuladas exclusivamente nos testes. Verificam navegação, pesquisa, hora selecionada, valores ausentes, direções, falhas independentes, repetição, fallback marítimo, parâmetros inválidos, ordem horizontal das secções, carregamento automático do IPMA, filtros dos três dias e ausência de overflow em ecrãs de 390, 768 e 1440 px. A CDN é bloqueada nos testes para verificar também o CSS de apoio. Não comprovam acesso às APIs reais.

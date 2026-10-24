@@ -1,78 +1,50 @@
 # Estado do Mar Portugal
 
-Aplicação académica estática, em português, para consultar o tempo e o estado do mar na costa portuguesa. HTML5, CSS, JavaScript puro, Bootstrap 5 por CDN e Fetch API. Sem npm, frameworks JavaScript, backend, base de dados ou chaves de API.
+Aplicação académica para consultar o tempo e o mar na costa portuguesa. Usa HTML, CSS, JavaScript puro, Bootstrap 5 por CDN e Fetch API. Não precisa de npm, backend, base de dados ou chaves de API.
 
 ## Executar
 
-1. Extrair o ZIP.
-2. Abrir a pasta no Visual Studio Code.
-3. Usar a extensão **Live Server** e abrir `index.html` com **Open with Live Server**.
+Abrir a pasta no VS Code e usar **Open with Live Server** em `index.html`.
 
-Alternativamente, com Python instalado, executar na pasta do projeto:
+Em alternativa, executar na pasta do projeto:
 
 ```sh
 python3 -m http.server 8000
 ```
 
-Abrir `http://localhost:8000`. Recomenda-se um servidor HTTP. Os scripts usam `defer`, sem módulos, para também carregarem ao abrir o HTML diretamente; nesse caso, o acesso às APIs depende das restrições do navegador para páginas `file://`. É necessária ligação à Internet para as APIs e para o Bootstrap. Não é necessário instalar dependências da aplicação. Existe CSS local de apoio à apresentação caso a CDN falhe.
+Abrir `http://localhost:8000`. É necessária Internet para consultar as APIs e carregar o Bootstrap. Recomenda-se um servidor HTTP; abrir o HTML diretamente pode limitar os pedidos às APIs.
 
-## Organização
+## Ficheiros
 
-- `index.html`: entrada com fotografia local do oceano e acesso ao catálogo.
-- `galeria.html` / `js/galeria.js`: carrossel com as 13 fotografias locais, navegação anterior/seguinte, indicadores e setas do teclado.
-- `catalogo.html` / `js/catalogo.js`: obtém todos os locais de `https://api.ipma.pt/open-data/sea-locations.json`, ordena-os e permite pesquisar sem acentos.
-- `detalhes.html` / `js/detalhes.js`: recebe coordenadas, nome e identificadores do IPMA pela URL. Consulta as APIs meteorológica e marítima em paralelo, com erros independentes.
-- `js/utils.js`: Fetch com limite de 20 segundos, formatação, códigos WMO, pontos cardeais, escolha da hora atual e acesso às previsões IPMA.
-- `css/style.css`: apresentação e adaptações para telemóvel.
-- `images/`: fotografias locais das regiões, imagem principal `surf_espinho.jpg`, ilustração SVG alternativa e ícone local.
-- `tests/`: testes opcionais de desenvolvimento; não são necessários para utilizar a aplicação.
+- `index.html`: página inicial, com a fotografia `surf_espinho.jpg`.
+- `catalogo.html` e `js/catalogo.js`: locais do IPMA, pesquisa, fotografias e links para os detalhes.
+- `detalhes.html` e `js/detalhes.js`: atmosfera, mar Open-Meteo e previsão oficial do IPMA.
+- `galeria.html` e `js/galeria.js`: fotografias com setas, indicadores e navegação pelo teclado.
+- `js/utils.js`: pedidos HTTP, formatação e mensagens de carregamento e erro.
+- `css/style.css`: estilos por secção e adaptações a diferentes ecrãs.
+- `images/`: fotografias e ícone locais.
+- `tests/`: testes opcionais de desenvolvimento; instruções em `tests/README.md`.
 
-## Dados e decisões
+## Dados
 
-**IPMA:** os locais, coordenadas, `globalIdLocal`, `idLocal` e `idAreaAviso` vêm da API. Não existe lista fixa nem dados demonstrativos na aplicação. A secção IPMA, apresentada abaixo do mar da Open-Meteo, consulta automaticamente a previsão de hoje e permite selecionar amanhã ou depois de amanhã. Apresenta os registos correspondentes em cartões com rótulos em português, unidades e intervalos de mínimo a máximo, sem os confundir com as observações horárias.
+O catálogo obtém os locais e as coordenadas do IPMA, sem uma lista fixa de regiões. Os links enviam esses dados pela URL para a página de detalhes.
 
-**Open-Meteo Weather:** temperatura, humidade, precipitação, código meteorológico WMO, velocidade/direção do vento e rajadas em `current`. Velocidade em km/h.
+A Open-Meteo fornece as condições atuais da atmosfera e os dados horários do mar. A aplicação escolhe a hora marítima mais recente, não futura e com menos de duas horas. Os timestamps Unix e o fuso da região evitam depender do fuso do computador.
 
-**Open-Meteo Marine:** ondas totais, swell, ondas de vento e temperatura da superfície do mar em `hourly`, com `cell_selection=sea`. Seleciona a hora mais recente não posterior ao instante atual, com menos de duas horas de diferença. Timestamps Unix permitem selecionar a hora sem depender do fuso do computador. `timezone=auto` apresenta a hora local da região, incluindo Açores.
+O IPMA mostra a previsão diária de hoje por defeito, com filtros para os dois dias seguintes. Os intervalos diários não representam o mesmo período que o valor horário da Open-Meteo. As três consultas têm erros independentes; valores ausentes aparecem como **N/D**.
 
-Se o servidor rejeitar o pedido marítimo com HTTP 400, tenta uma vez sem a temperatura da superfície do mar, que pode não ser suportada. Valores ausentes, nulos ou inválidos são **N/D**, nunca zero inventado. As direções são N, NE, E, SE, S, SW, W e NW. A direção segue a convenção da fonte (direção de proveniência).
+Os pedidos têm um limite de 20 segundos. Se a API marítima rejeitar o pedido com HTTP 400, a aplicação tenta uma vez sem a temperatura da superfície do mar. As direções mantêm a convenção de proveniência das fontes.
 
-A hora apresentada é a hora de validade dos dados do modelo, não uma alegada medição local nem a hora de publicação. As coordenadas exibidas pertencem ao local IPMA; a Open-Meteo pode selecionar uma célula marítima próxima.
+## Fotografias e galeria
 
-Falhas HTTP, de ligação ou de CORS mostram uma mensagem e um botão para repetir. Não é possível contornar CORS no frontend: se um fornecedor alterar a sua política, é necessária uma alteração do fornecedor ou uma revisão da arquitetura. Não há proxy ou backend neste projeto.
+A tabela `imagensRegioes`, em `js/catalogo.js`, associa os nomes às fotografias em `images/`. Para trocar uma foto, substituir o ficheiro ou alterar a entrada na tabela. Se uma imagem falhar, o cartão mantém a ilustração alternativa em CSS.
 
-## Fontes e limites
+As fotografias da galeria são definidas em `galeria.html`. O carrossel não avança automaticamente: usa as setas, os indicadores ou o teclado quando tem foco. Todas as imagens ocupam a mesma área, até **1200 × 600 px** no computador e proporção **4:3** no telemóvel. `object-fit: cover` recorta sem deformar.
 
-- IPMA: https://api.ipma.pt/ (dados e condições de utilização do IPMA).
-- Open-Meteo: https://open-meteo.com/ e https://open-meteo.com/en/docs/marine-weather-api (atribuição e condições atuais do fornecedor; dados Open-Meteo sob CC BY 4.0).
-- Bootstrap 5.3.3: https://getbootstrap.com/ (MIT), carregado de `cdn.jsdelivr.net`.
+## Fontes
 
-O acesso gratuito às APIs está sujeito às condições e limites dos fornecedores. As previsões não substituem avisos oficiais nem a avaliação das condições locais. A aplicação não calcula se é seguro nadar ou surfar.
+- [IPMA](https://api.ipma.pt/): locais costeiros e previsão marítima oficial.
+- [Open-Meteo](https://open-meteo.com/): meteorologia e [previsão marítima](https://open-meteo.com/en/docs/marine-weather-api); dados sob CC BY 4.0.
+- [Bootstrap 5.3.3](https://getbootstrap.com/): estilos carregados de `cdn.jsdelivr.net`, licença MIT.
 
-## Verificação
-
-Os testes opcionais documentados em `tests/README.md` usam respostas simuladas e não devem ser confundidos com uma consulta real às APIs. Foram obtidas respostas reais dos quatro endpoints: 12 locais IPMA, previsão marítima oficial, tempo e condições marítimas Open-Meteo. A aplicação entregue mantém os URLs reais, sem dados simulados. O navegador depende do acesso HTTPS e da política CORS dos fornecedores.
-
-### Resultado da validação nesta entrega
-
-Sete testes Playwright passaram. O fluxo com respostas reais apresentou os 12 locais e os dados meteorológicos, marítimos e oficiais da Figueira da Foz. O Chromium do ambiente não reconheceu a autoridade certificadora do proxy; nessa verificação funcional, os pedidos HTTPS reais foram encaminhados pelo transporte Python com validação TLS ativa. Não se desativou a verificação de certificados. A execução direta no navegador do utilizador continua dependente da sua ligação e da política CORS dos fornecedores.
-
-## Se o catálogo não carregar
-
-Atualizar todos os ficheiros do repositório e recarregar com Ctrl+F5. Se abriste o HTML diretamente, experimentar Live Server. Se aparecer uma mensagem de erro, confirmar o acesso a https://api.ipma.pt/open-data/sea-locations.json e verificar a consola do navegador (F12). A aplicação precisa de JavaScript e acesso à Internet; não inclui uma lista fixa de locais de reserva.
-
-## Organização dos detalhes
-
-Atmosfera no topo, mar Open-Meteo Marine a seguir e mar IPMA abaixo. Em ecrãs largos, as medidas aparecem na horizontal; em telemóveis organizam-se em duas colunas. As quatro medidas principais do mar mantêm a mesma ordem nas duas fontes: altura, período, direção e temperatura da água. O IPMA apresenta intervalos diários; a Open-Meteo apresenta a hora atual disponível, pelo que não são previsões para o mesmo período. A escolha do dia altera apenas o IPMA. O botão geral de atualização consulta as três fontes, mantendo o dia selecionado no IPMA.
-
-## Fotografias das regiões
-
-A tabela `imagensRegioes`, em `js/catalogo.js`, associa cada nome de região à fotografia local da pasta `images`. Os nomes recebidos do IPMA são normalizados, retirando o sufixo Costa, acentos e diferenças entre maiúsculas e minúsculas. As regiões continuam a ser carregadas da API; a tabela escolhe apenas a imagem. Para trocar uma fotografia, substituir o ficheiro ou alterar a respetiva entrada nesta tabela. O estilo `.region-photo`, no fim de `css/style.css`, centra e recorta as imagens sem as deformar. Se não existir fotografia para uma nova região ou o carregamento falhar, mantém-se a ilustração alternativa em CSS.
-
-## Galeria de fotografias
-
-O cabeçalho de todas as páginas permite abrir o Catálogo e a Galeria. A galeria usa as 13 fotografias já incluídas em `images/`, sem API de imagens nem dependências adicionais. O carrossel avança por cliques, indicadores ou setas do teclado quando o foco está no carrossel. Não existe avanço automático. As legendas e os caminhos das fotografias estão em `galeria.html`; os controlos são geridos por `js/galeria.js`. Sem JavaScript, a primeira fotografia e o acesso ao catálogo continuam disponíveis.
-
-### Tamanho das imagens do carrossel
-
-Em ecrãs grandes, a galeria tem uma área máxima de 1200 × 600 px (proporção 2:1). Todas as fotografias preenchem essa mesma área com `object-fit: cover`, que recorta o excedente sem deformar a imagem. Em ecrãs até 600 px, a área usa a proporção 4:3 para acomodar as legendas e controlos. O tamanho é definido em `.gallery-stage` e `.gallery-slide > img`, em `css/style.css`. Setas, legendas e indicadores aparecem sobre a fotografia, como no exemplo de carrossel com legendas.
+Respeitar as condições de utilização e os limites dos fornecedores. As previsões não substituem os avisos oficiais ou a avaliação das condições locais.

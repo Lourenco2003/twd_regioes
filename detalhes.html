@@ -1,323 +1,113 @@
-<!-- Indica ao navegador que este documento usa HTML5. -->
 <!doctype html>
-<!--
-    Detalhes: apresenta atmosfera, mar Open-Meteo e previsão IPMA pela ordem indicada.
-    Guia de leitura: cada bloco está indentado dentro do elemento a que pertence.
-    Uma tag como <section> abre um elemento; </section> termina esse mesmo elemento.
-    Tags vazias, como <meta>, <link>, <img>, <input> e <br>, não têm conteúdo nem tag de fecho.
-    class associa estilos; id identifica um elemento que o JavaScript pode encontrar.
-    Os comentários explicativos não são apresentados no conteúdo visível do navegador.
--->
-<!-- Elemento raiz; lang="pt-PT" identifica o conteúdo como português de Portugal. -->
 <html lang="pt-PT">
-    <!-- Metadados, título e ficheiros de apresentação; esta área não é o conteúdo visível da página. -->
+    <!-- Metadados e estilos. -->
     <head>
-        <!-- UTF-8 permite apresentar corretamente acentos, símbolos e caracteres portugueses. -->
         <meta charset="utf-8" />
-        <!--
-            Adapta a largura da página ao ecrã e define a escala inicial, permitindo o desenho
-            responsivo.
-        -->
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <!-- Define a descrição da aplicação usada por motores de pesquisa e outras ferramentas. -->
         <meta
             name="description"
             content="Consulta o tempo, as ondas e o swell nas regiões costeiras de Portugal."
         />
-        <!-- Define o texto do separador do navegador; não é o título visível dentro da página. -->
         <title>Condições da costa · Estado do Mar</title>
-        <!-- Carrega Bootstrap 5.3.3 através de CDN, sem instalar pacotes na aplicação. -->
         <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
             rel="stylesheet"
         />
-        <!-- Carrega o CSS local com as cores, os espaçamentos e as adaptações a telemóveis. -->
         <link href="css/style.css" rel="stylesheet" />
-        <!-- Usa o ícone SVG local como ícone do separador do navegador. -->
         <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
     </head>
-    <!-- Começa o conteúdo visível e interativo desta página. -->
     <body>
-        <!--
-            Cabeçalho com a marca e a navegação principal. A classe site-header define o cabeçalho comum
-            às três páginas.
-        -->
+        <!-- Navegação comum. -->
         <header class="site-header">
-            <!--
-                Agrupa os links de navegação; aria-label descreve esta navegação para leitores de ecrã. A
-                classe container centra e limita a largura do conteúdo. A classe d-flex ativa uma disposição
-                flexível em linha. A classe align-items-center alinha verticalmente os elementos ao centro.
-                A classe justify-content-between afasta os elementos para os extremos da linha.
-            -->
             <nav
                 class="container d-flex align-items-center justify-content-between"
                 aria-label="Navegação principal"
             >
-                <!--
-                    Link que regressa à página inicial. A classe brand aplica o estilo do nome e do link da
-                    aplicação.
-                -->
                 <a class="brand" href="index.html">
-                    <!--
-                        Marca uma pequena parte de texto ou um elemento decorativo sem criar uma secção própria. A
-                        classe brand-mark desenha o símbolo da marca com texto. aria-hidden="true" retira este
-                        elemento decorativo da leitura por tecnologias de apoio.
-                    -->
                     <span class="brand-mark" aria-hidden="true">≈</span>
                     estado do mar
-                    <!--
-                        Marca uma pequena parte de texto ou um elemento decorativo sem criar uma secção própria. A
-                        classe brand-country estiliza a indicação PORTUGAL.
-                    -->
                     <span class="brand-country">PORTUGAL</span>
                 </a>
-                <!-- Links comuns para consultar as condições ou explorar as fotografias. -->
                 <div class="header-actions">
-                    <!-- Abre a página das regiões; aria-current identifica a página atual. -->
                     <a class="nav-link header-button" href="catalogo.html">Catálogo</a>
-                    <!-- Abre o carrossel de fotografias das praias e da costa. -->
                     <a class="nav-link header-button" href="galeria.html">Galeria</a>
                 </div>
             </nav>
         </header>
-        <!--
-            Identifica o conteúdo principal desta página. A classe container centra e limita a largura
-            do conteúdo. A classe page-main define os espaçamentos do conteúdo principal. A classe
-            details-page aplica os ajustes específicos da página de detalhes.
-        -->
         <main class="container page-main details-page">
-            <!--
-                Link que abre o catálogo de regiões costeiras. A classe back-link formata o link de regresso
-                ao catálogo.
-            -->
             <a class="back-link" href="catalogo.html">← Todas as regiões</a>
-            <!--
-                Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. A
-                classe detail-intro organiza o nome da região e o botão de atualização.
-            -->
             <div class="detail-intro">
-                <!-- Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. -->
                 <div>
-                    <!-- Parágrafo de texto informativo. A classe eyebrow estiliza uma pequena legenda de secção. -->
                     <p class="eyebrow">O TEU PRÓXIMO HORIZONTE</p>
-                    <!--
-                        Título principal da página; existe apenas um h1 neste documento. O id nome-local recebe o
-                        nome da região enviado através da URL.
-                    -->
                     <h1 id="nome-local">Condições da costa</h1>
-                    <!--
-                        Parágrafo de texto informativo. A classe lead formata o texto introdutório. O id coordenadas
-                        recebe a latitude e longitude recebidas do catálogo.
-                    -->
                     <p id="coordenadas" class="lead"></p>
                 </div>
-                <!--
-                    Botão de ação; type="button" evita submeter um formulário por acidente. A classe btn dá ao
-                    elemento a aparência base de um botão. A classe btn-outline-ocean aplica o estilo de botão
-                    com contorno. O id atualizar permite atualizar as três fontes de dados em paralelo.
-                -->
                 <button id="atualizar" class="btn btn-outline-ocean" type="button">
                     ↻ Atualizar dados
                 </button>
             </div>
-            <!--
-                Parágrafo de texto informativo. A classe alert aplica a apresentação base de aviso do
-                Bootstrap. A classe alert-warning usa o estilo de aviso amarelo do Bootstrap. O id erro-
-                local é mostrado apenas quando as coordenadas recebidas são inválidas. hidden mantém o aviso
-                oculto até o JavaScript detetar um problema.
-            -->
             <p id="erro-local" class="alert alert-warning" hidden></p>
-            <!--
-                Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. A
-                classe conditions-stack empilha as três secções de condições na ordem pretendida.
-            -->
+            <!-- Atmosfera, mar Open-Meteo e previsão oficial IPMA. -->
             <div class="conditions-stack">
-                <!--
-                    Agrupa uma secção temática; aria-labelledby associa-a ao título com o identificador
-                    indicado. A classe card aplica a base visual de cartão. A classe conditions-card define o
-                    espaçamento interno dos cartões de condições. A classe atmosphere-panel identifica a área da
-                    atmosfera no documento.
-                -->
                 <section
                     class="card conditions-card atmosphere-panel"
                     aria-labelledby="titulo-tempo"
                 >
-                    <!--
-                        Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. A
-                        classe section-heading formata o cabeçalho de uma secção. A classe section-heading-inline
-                        alinha o título e a identificação da fonte na horizontal.
-                    -->
                     <div class="section-heading section-heading-inline">
-                        <!-- Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. -->
                         <div>
-                            <!--
-                                Marca uma pequena parte de texto ou um elemento decorativo sem criar uma secção própria. A
-                                classe eyebrow estiliza uma pequena legenda de secção.
-                            -->
                             <span class="eyebrow">01 · ATMOSFERA</span>
-                            <!--
-                                Título de uma secção subordinada ao título principal. O id titulo-tempo identifica o título
-                                associado à secção de atmosfera.
-                            -->
                             <h2 id="titulo-tempo">O tempo na costa</h2>
                         </div>
-                        <!--
-                            Marca uma pequena parte de texto ou um elemento decorativo sem criar uma secção própria. A
-                            classe source-badge apresenta a fonte numa etiqueta.
-                        -->
                         <span class="source-badge">Open-Meteo Weather</span>
                     </div>
-                    <!--
-                        Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. O
-                        id tempo recebe as medidas meteorológicas construídas em detalhes.js. aria-live="polite"
-                        anuncia alterações desta área sem interromper a leitura atual.
-                    -->
                     <div id="tempo" aria-live="polite"></div>
                 </section>
-                <!--
-                    Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. A
-                    classe comparison-heading organiza o título e a explicação da comparação marítima.
-                -->
                 <div class="comparison-heading">
-                    <!-- Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. -->
                     <div>
-                        <!-- Parágrafo de texto informativo. A classe eyebrow estiliza uma pequena legenda de secção. -->
                         <p class="eyebrow">DUAS FONTES, O MESMO HORIZONTE</p>
-                        <!-- Título de uma secção subordinada ao título principal. -->
                         <h2>Compara o estado do mar</h2>
                     </div>
-                    <!-- Parágrafo de texto informativo. -->
                     <p>
                         A Open-Meteo mostra a hora atual disponível. O IPMA apresenta intervalos
                         previstos para cada dia.
                     </p>
                 </div>
-                <!--
-                    Agrupa uma secção temática; aria-labelledby associa-a ao título com o identificador
-                    indicado. A classe card aplica a base visual de cartão. A classe conditions-card define o
-                    espaçamento interno dos cartões de condições. A classe sea-panel aplica o fundo da secção
-                    marítima da Open-Meteo.
-                -->
                 <section class="card conditions-card sea-panel" aria-labelledby="titulo-mar">
-                    <!--
-                        Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. A
-                        classe section-heading formata o cabeçalho de uma secção. A classe section-heading-inline
-                        alinha o título e a identificação da fonte na horizontal.
-                    -->
                     <div class="section-heading section-heading-inline">
-                        <!-- Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. -->
                         <div>
-                            <!--
-                                Marca uma pequena parte de texto ou um elemento decorativo sem criar uma secção própria. A
-                                classe eyebrow estiliza uma pequena legenda de secção.
-                            -->
                             <span class="eyebrow">02 · PREVISÃO HORÁRIA</span>
-                            <!--
-                                Título de uma secção subordinada ao título principal. O id titulo-mar identifica o título
-                                associado à secção Open-Meteo Marine.
-                            -->
                             <h2 id="titulo-mar">Mar · Open-Meteo</h2>
                         </div>
-                        <!--
-                            Marca uma pequena parte de texto ou um elemento decorativo sem criar uma secção própria. A
-                            classe source-badge apresenta a fonte numa etiqueta.
-                        -->
                         <span class="source-badge">Open-Meteo Marine</span>
                     </div>
-                    <!--
-                        Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. O
-                        id mar recebe os dados horários da Open-Meteo Marine. aria-live="polite" anuncia alterações
-                        desta área sem interromper a leitura atual.
-                    -->
                     <div id="mar" aria-live="polite"></div>
                 </section>
-                <!--
-                    Agrupa uma secção temática; aria-labelledby associa-a ao título com o identificador
-                    indicado. A classe card aplica a base visual de cartão. A classe conditions-card define o
-                    espaçamento interno dos cartões de condições. A classe ipma-panel aplica o estilo da secção
-                    marítima do IPMA. O id oficial identifica a secção da previsão marítima do IPMA.
-                -->
                 <section
                     id="oficial"
                     class="card conditions-card ipma-panel"
                     aria-labelledby="titulo-ipma"
                 >
-                    <!--
-                        Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. A
-                        classe section-heading formata o cabeçalho de uma secção. A classe section-heading-inline
-                        alinha o título e a identificação da fonte na horizontal.
-                    -->
                     <div class="section-heading section-heading-inline">
-                        <!-- Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. -->
                         <div>
-                            <!--
-                                Marca uma pequena parte de texto ou um elemento decorativo sem criar uma secção própria. A
-                                classe eyebrow estiliza uma pequena legenda de secção.
-                            -->
                             <span class="eyebrow">03 · PREVISÃO DIÁRIA OFICIAL</span>
-                            <!--
-                                Título de uma secção subordinada ao título principal. O id titulo-ipma identifica o título
-                                associado à secção do IPMA.
-                            -->
                             <h2 id="titulo-ipma">Mar · IPMA</h2>
                         </div>
-                        <!--
-                            Marca uma pequena parte de texto ou um elemento decorativo sem criar uma secção própria. A
-                            classe source-badge apresenta a fonte numa etiqueta.
-                        -->
                         <span class="source-badge">IPMA</span>
                     </div>
-                    <!--
-                        Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. A
-                        classe ipma-toolbar organiza os filtros de dia e o botão de atualização do IPMA.
-                    -->
+                    <!-- Hoje, amanhã e depois de amanhã. -->
                     <div class="ipma-toolbar">
-                        <!--
-                            Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. A
-                            classe day-filters formata os três botões que escolhem o dia da previsão. role="group" e
-                            aria-label identificam estes controlos como um grupo de escolha do dia.
-                        -->
                         <div class="day-filters" role="group" aria-label="Dia da previsão IPMA">
-                            <!--
-                                Botão de ação; type="button" evita submeter um formulário por acidente. data-dia="0" é lido
-                                pelo JavaScript: 0 = hoje, 1 = amanhã e 2 = depois de amanhã. aria-pressed="true" define se
-                                este filtro começa selecionado; o JavaScript atualiza o atributo ao trocar de dia.
-                            -->
                             <button type="button" data-dia="0" aria-pressed="true">Hoje</button>
-                            <!--
-                                Botão de ação; type="button" evita submeter um formulário por acidente. data-dia="1" é lido
-                                pelo JavaScript: 0 = hoje, 1 = amanhã e 2 = depois de amanhã. aria-pressed="false" define se
-                                este filtro começa selecionado; o JavaScript atualiza o atributo ao trocar de dia.
-                            -->
                             <button type="button" data-dia="1" aria-pressed="false">Amanhã</button>
-                            <!--
-                                Botão de ação; type="button" evita submeter um formulário por acidente. data-dia="2" é lido
-                                pelo JavaScript: 0 = hoje, 1 = amanhã e 2 = depois de amanhã. aria-pressed="false" define se
-                                este filtro começa selecionado; o JavaScript atualiza o atributo ao trocar de dia.
-                            -->
                             <button type="button" data-dia="2" aria-pressed="false">
                                 Depois de amanhã
                             </button>
                         </div>
-                        <!--
-                            Botão de ação; type="button" evita submeter um formulário por acidente. A classe btn dá ao
-                            elemento a aparência base de um botão. A classe btn-outline-ocean aplica o estilo de botão
-                            com contorno. O id consultar-ipma permite repetir a consulta do IPMA para o dia selecionado.
-                        -->
                         <button id="consultar-ipma" class="btn btn-outline-ocean" type="button">
                             ↻ Atualizar IPMA
                         </button>
                     </div>
-                    <!--
-                        Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. O
-                        id dados-ipma recebe a previsão oficial do dia selecionado. aria-live="polite" anuncia
-                        alterações desta área sem interromper a leitura atual.
-                    -->
                     <div id="dados-ipma" aria-live="polite"></div>
-                    <!--
-                        Parágrafo de texto informativo. A classe comparison-note formata a explicação sobre a
-                        comparação entre modelos e períodos.
-                    -->
                     <p class="comparison-note">
                         Os valores do IPMA são intervalos de mínimo a máximo ao longo do dia.
                         Compara as tendências tendo em conta que as fontes usam modelos, locais de
@@ -325,57 +115,25 @@
                     </p>
                 </section>
             </div>
-            <!--
-                Parágrafo de texto informativo. A classe data-note formata uma nota sobre fontes,
-                disponibilidade ou limites dos dados.
-            -->
             <p class="data-note">
                 Previsões de modelos meteorológicos, sujeitas a atualização. N/D significa
                 informação não disponível. Consulta os avisos oficiais e as condições locais antes
                 de entrar no mar.
             </p>
         </main>
-        <!--
-            Rodapé com uma nota sobre a aplicação e ligações às fontes de dados. A classe site-footer
-            formata o rodapé comum da aplicação.
-        -->
+        <!-- Fontes dos dados. -->
         <footer class="site-footer">
-            <!--
-                Agrupa elementos para organizar a apresentação ou receber conteúdo gerado por JavaScript. A
-                classe container centra e limita a largura do conteúdo. A classe d-flex ativa uma disposição
-                flexível em linha. A classe flex-wrap permite que os elementos passem para outra linha
-                quando falta espaço. A classe justify-content-between afasta os elementos para os extremos
-                da linha. A classe gap-2 cria espaço entre os elementos.
-            -->
             <div class="container d-flex flex-wrap justify-content-between gap-2">
-                <!-- Marca uma pequena parte de texto ou um elemento decorativo sem criar uma secção própria. -->
                 <span>Uma janela para a costa portuguesa.</span>
-                <!-- Marca uma pequena parte de texto ou um elemento decorativo sem criar uma secção própria. -->
                 <span>
                     Dados:
-                    <!--
-                        Link externo para a fonte dos dados; target="_blank" abre outro separador e rel="noopener"
-                        evita acesso à página de origem.
-                    -->
                     <a href="https://www.ipma.pt/" target="_blank" rel="noopener">IPMA</a>
                     ·
-                    <!--
-                        Link externo para a fonte dos dados; target="_blank" abre outro separador e rel="noopener"
-                        evita acesso à página de origem.
-                    -->
                     <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>
                 </span>
             </div>
         </footer>
-        <!--
-            Carrega js/utils.js; defer espera pelo HTML e mantém a ordem dos scripts. utils.js deve vir
-            antes do código específico da página.
-        -->
         <script defer src="js/utils.js"></script>
-        <!--
-            Carrega js/detalhes.js; defer espera pelo HTML e mantém a ordem dos scripts. utils.js deve
-            vir antes do código específico da página.
-        -->
         <script defer src="js/detalhes.js"></script>
     </body>
 </html>

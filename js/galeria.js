@@ -1,79 +1,61 @@
-/**
- * galeria.js — controla o carrossel de fotografias locais, sem bibliotecas adicionais.
- * Fluxo: obter os elementos, associar os cliques e mostrar a primeira fotografia.
- */
+// Navegação pelo carrossel de fotografias locais.
 (() => {
-    // O modo estrito ajuda a detetar erros de escrita e variáveis não declaradas.
     'use strict';
-
-    // Guarda a região do carrossel para receber as setas do teclado quando tem foco.
     const galeria = document.querySelector('#galeria');
-    // Transforma as figuras e os botões dos indicadores em listas JavaScript.
     const fotografias = [...document.querySelectorAll('.gallery-slide')];
     const indicadores = [...document.querySelectorAll('[data-foto]')];
-    // Obtém os controlos e a área que anuncia a fotografia selecionada.
     const anterior = document.querySelector('#foto-anterior');
     const seguinte = document.querySelector('#foto-seguinte');
     const contador = document.querySelector('#contador-fotos');
-    // O índice zero corresponde à primeira fotografia: Espinho.
     let indiceAtual = 0;
 
-    // Atualiza a fotografia visível, a seleção dos indicadores e o contador.
+    // Atualiza a fotografia visível, os indicadores e o contador.
     function mostrarFotografia(indice) {
-        // O módulo permite voltar à primeira fotografia depois da última e vice-versa.
+        // Permite passar da última fotografia para a primeira e vice-versa.
         indiceAtual = (indice + fotografias.length) % fotografias.length;
-        // Só a fotografia selecionada fica visível e acessível a leitores de ecrã.
         fotografias.forEach((fotografia, posicao) => {
             fotografia.hidden = posicao !== indiceAtual;
         });
-        // Identifica visualmente o indicador selecionado e atualiza a acessibilidade.
         indicadores.forEach((indicador, posicao) => {
             indicador.setAttribute('aria-pressed', String(posicao === indiceAtual));
         });
-        // Lê o nome já presente na legenda, evitando manter outra lista de nomes no JavaScript.
         const local = fotografias[indiceAtual].querySelector('h2').textContent;
-        // Apresenta a posição atual, o total de imagens e o nome do local.
         contador.textContent = `${indiceAtual + 1} / ${fotografias.length} · ${local}`;
     }
-
-    // Mostra uma mensagem no lugar da imagem caso um ficheiro não possa ser carregado.
     fotografias.forEach((fotografia) => {
         const imagem = fotografia.querySelector('img');
+
+        // Mantém a galeria utilizável se uma fotografia falhar.
         function mostrarErroImagem() {
-            // Oculta o ícone de imagem partida, mantendo a legenda e os controlos disponíveis.
             imagem.hidden = true;
             if (fotografia.querySelector('.gallery-image-error')) return;
-            // Cria a mensagem com texto simples, sem interpretar HTML.
             const aviso = document.createElement('p');
             aviso.className = 'gallery-image-error';
             aviso.textContent =
                 'Não foi possível carregar esta fotografia. Podes continuar a explorar a galeria.';
             fotografia.prepend(aviso);
         }
-        // O evento trata falhas futuras; complete e naturalWidth detetam uma falha já concluída.
         imagem.addEventListener('error', mostrarErroImagem);
+        // Trata também uma falha que ocorreu antes de registar o evento.
         if (imagem.complete && imagem.naturalWidth === 0) mostrarErroImagem();
     });
 
-    // Cada clique avança ou recua uma posição, sem abrir outra página.
+    // Botões e indicadores.
     anterior.addEventListener('click', () => mostrarFotografia(indiceAtual - 1));
     seguinte.addEventListener('click', () => mostrarFotografia(indiceAtual + 1));
-    // Cada indicador envia o seu índice, guardado no atributo data-foto do HTML.
     indicadores.forEach((indicador) => {
         indicador.addEventListener('click', () =>
             mostrarFotografia(Number(indicador.dataset.foto)),
         );
     });
-    // As setas só controlam a galeria quando o foco está no carrossel ou nos seus controlos.
+
+    // As setas atuam apenas quando o foco está no carrossel.
     galeria.addEventListener('keydown', (evento) => {
         if (evento.key === 'ArrowLeft' || evento.key === 'ArrowRight') {
-            // Evita deslocar horizontalmente a página ao navegar pelas fotografias.
             evento.preventDefault();
             mostrarFotografia(indiceAtual + (evento.key === 'ArrowRight' ? 1 : -1));
         }
     });
-
-    // Inicializa o contador antes de revelar os controlos dependentes de JavaScript.
     mostrarFotografia(0);
     document.querySelector('#controlos-galeria').hidden = false;
 })();

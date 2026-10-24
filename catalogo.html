@@ -71,18 +71,15 @@
                     -->
                     <span class="brand-country">PORTUGAL</span>
                 </a>
-                <!--
-                    Link que abre o catálogo de regiões costeiras. A classe nav-link aplica o estilo do link de
-                    navegação.
-                -->
-                <a class="nav-link" href="catalogo.html">
-                    Explorar a costa
-                    <!--
-                        Marca uma pequena parte de texto ou um elemento decorativo sem criar uma secção própria.
-                        aria-hidden="true" retira este elemento decorativo da leitura por tecnologias de apoio.
-                    -->
-                    <span aria-hidden="true">→</span>
-                </a>
+                <!-- Links comuns para consultar as condições ou explorar as fotografias. -->
+                <div class="header-actions">
+                    <!-- Abre a página das regiões; aria-current identifica a página atual. -->
+                    <a class="nav-link header-button" href="catalogo.html" aria-current="page">
+                        Catálogo
+                    </a>
+                    <!-- Abre o carrossel de fotografias das praias e da costa. -->
+                    <a class="nav-link header-button" href="galeria.html">Galeria</a>
+                </div>
             </nav>
         </header>
         <!--

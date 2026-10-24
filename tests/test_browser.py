@@ -172,6 +172,42 @@ class Aplicacao(unittest.TestCase):
         self.assertEqual(self.page.locator('[data-dia="1"]').get_attribute('aria-pressed'), 'true')
         self.assertEqual(self.page.locator('[data-dia="0"]').get_attribute('aria-pressed'), 'false')
 
+    def test_galeria_navegacao_carrossel_e_miniaturas(self):
+        self.page.goto(BASE)
+        self.page.get_by_role('navigation').get_by_role('link', name='Galeria', exact=True).click()
+        self.page.locator('#controlos-galeria:not([hidden])').wait_for()
+        self.assertEqual(self.page.locator('.gallery-slide').count(), 13)
+        self.assertEqual(self.page.locator('.gallery-slide:not([hidden])').count(), 1)
+        self.assertIn('1 / 13 · Espinho', self.page.locator('#contador-fotos').inner_text())
+        self.page.get_by_role('button', name='Fotografia anterior', exact=True).click()
+        self.assertIn('13 / 13 · Viana do Castelo', self.page.locator('#contador-fotos').inner_text())
+        self.page.get_by_role('button', name='Fotografia seguinte', exact=True).click()
+        self.assertIn('1 / 13 · Espinho', self.page.locator('#contador-fotos').inner_text())
+        self.page.get_by_role('button', name='Ver fotografia de Porto', exact=True).click()
+        self.assertIn('8 / 13 · Porto', self.page.locator('#contador-fotos').inner_text())
+        self.assertEqual(self.page.locator('[data-foto="7"]').get_attribute('aria-pressed'), 'true')
+        self.page.locator('#galeria').focus()
+        self.page.keyboard.press('ArrowRight')
+        self.assertIn('9 / 13 · Porto Santo', self.page.locator('#contador-fotos').inner_text())
+        self.page.keyboard.press('ArrowLeft')
+        self.assertIn('8 / 13 · Porto', self.page.locator('#contador-fotos').inner_text())
+        for largura in [320, 390, 768, 1440]:
+            self.page.set_viewport_size({'width': largura, 'height': 900})
+            self.assertTrue(self.page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
+        self.page.get_by_role('link', name='Consultar o catálogo').click()
+        self.assertTrue(self.page.url.endswith('/catalogo.html'))
+        self.assertTrue(self.page.get_by_role('navigation').get_by_role('link', name='Galeria', exact=True).is_visible())
+
+    def test_galeria_imagem_indisponivel(self):
+        self.page.route('**/images/surf_espinho.jpg', lambda rota: rota.abort())
+        self.page.goto(BASE + '/galeria.html')
+        self.page.locator('.gallery-image-error').first.wait_for()
+        self.assertIn('Não foi possível carregar', self.page.locator('.gallery-slide:not([hidden])').inner_text())
+        self.page.get_by_role('button', name='Fotografia seguinte', exact=True).click()
+        imagem = self.page.locator('.gallery-slide:not([hidden]) > img')
+        imagem.evaluate('(img) => img.decode()')
+        self.assertTrue(imagem.evaluate('(img) => img.naturalWidth > 0'))
+
     def test_responsividade(self):
         for largura in [390, 768, 1440]:
             self.page.set_viewport_size({'width': largura, 'height': 900})

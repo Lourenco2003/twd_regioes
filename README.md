@@ -18,7 +18,8 @@ Abrir `http://localhost:8000`. Recomenda-se um servidor HTTP. Os scripts usam `d
 
 ## Organização
 
-- `index.html`: entrada com imagem vetorial local do oceano e acesso ao catálogo.
+- `index.html`: entrada com fotografia local do oceano e acesso ao catálogo.
+- `galeria.html` / `js/galeria.js`: carrossel com as 13 fotografias locais, navegação anterior/seguinte, miniaturas e setas do teclado.
 - `catalogo.html` / `js/catalogo.js`: obtém todos os locais de `https://api.ipma.pt/open-data/sea-locations.json`, ordena-os e permite pesquisar sem acentos.
 - `detalhes.html` / `js/detalhes.js`: recebe coordenadas, nome e identificadores do IPMA pela URL. Consulta as APIs meteorológica e marítima em paralelo, com erros independentes.
 - `js/utils.js`: Fetch com limite de 20 segundos, formatação, códigos WMO, pontos cardeais, escolha da hora atual e acesso às previsões IPMA.
@@ -67,3 +68,7 @@ Atmosfera no topo, mar Open-Meteo Marine a seguir e mar IPMA abaixo. Em ecrãs l
 ## Fotografias das regiões
 
 A tabela `imagensRegioes`, em `js/catalogo.js`, associa cada nome de região à fotografia local da pasta `images`. Os nomes recebidos do IPMA são normalizados, retirando o sufixo Costa, acentos e diferenças entre maiúsculas e minúsculas. As regiões continuam a ser carregadas da API; a tabela escolhe apenas a imagem. Para trocar uma fotografia, substituir o ficheiro ou alterar a respetiva entrada nesta tabela. O estilo `.region-photo`, no fim de `css/style.css`, centra e recorta as imagens sem as deformar. Se não existir fotografia para uma nova região ou o carregamento falhar, mantém-se a ilustração alternativa em CSS.
+
+## Galeria de fotografias
+
+O cabeçalho de todas as páginas permite abrir o Catálogo e a Galeria. A galeria usa as 13 fotografias já incluídas em `images/`, sem API de imagens nem dependências adicionais. O carrossel avança por cliques, miniaturas ou setas do teclado quando o foco está no carrossel. Não existe avanço automático. As legendas e os caminhos das fotografias estão em `galeria.html`; os controlos são geridos por `js/galeria.js`. Sem JavaScript, a primeira fotografia e o acesso ao catálogo continuam disponíveis.

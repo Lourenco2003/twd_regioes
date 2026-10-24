@@ -23,7 +23,7 @@ Abrir `http://localhost:8000`. Recomenda-se um servidor HTTP. Os scripts usam `d
 - `detalhes.html` / `js/detalhes.js`: recebe coordenadas, nome e identificadores do IPMA pela URL. Consulta as APIs meteorológica e marítima em paralelo, com erros independentes.
 - `js/utils.js`: Fetch com limite de 20 segundos, formatação, códigos WMO, pontos cardeais, escolha da hora atual e acesso às previsões IPMA.
 - `css/style.css`: apresentação e adaptações para telemóvel.
-- `images/`: ilustração SVG original e ícone local, sem dependências de imagens externas.
+- `images/`: fotografias locais das regiões, imagem principal `surf_espinho.jpg`, ilustração SVG alternativa e ícone local.
 - `tests/`: testes opcionais de desenvolvimento; não são necessários para utilizar a aplicação.
 
 ## Dados e decisões
@@ -63,3 +63,7 @@ Atualizar todos os ficheiros do repositório e recarregar com Ctrl+F5. Se abrist
 ## Organização dos detalhes
 
 Atmosfera no topo, mar Open-Meteo Marine a seguir e mar IPMA abaixo. Em ecrãs largos, as medidas aparecem na horizontal; em telemóveis organizam-se em duas colunas. As quatro medidas principais do mar mantêm a mesma ordem nas duas fontes: altura, período, direção e temperatura da água. O IPMA apresenta intervalos diários; a Open-Meteo apresenta a hora atual disponível, pelo que não são previsões para o mesmo período. A escolha do dia altera apenas o IPMA. O botão geral de atualização consulta as três fontes, mantendo o dia selecionado no IPMA.
+
+## Fotografias das regiões
+
+A tabela `imagensRegioes`, em `js/catalogo.js`, associa cada nome de região à fotografia local da pasta `images`. Os nomes recebidos do IPMA são normalizados, retirando o sufixo Costa, acentos e diferenças entre maiúsculas e minúsculas. As regiões continuam a ser carregadas da API; a tabela escolhe apenas a imagem. Para trocar uma fotografia, substituir o ficheiro ou alterar a respetiva entrada nesta tabela. O estilo `.region-photo`, no fim de `css/style.css`, centra e recorta as imagens sem as deformar. Se não existir fotografia para uma nova região ou o carregamento falhar, mantém-se a ilustração alternativa em CSS.

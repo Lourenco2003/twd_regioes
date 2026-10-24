@@ -4,3 +4,29 @@
 
 /* Detalhes: atmosfera e previsões marítimas em faixas horizontais. */
 .details-page{max-width:1280px}.conditions-stack{display:grid;gap:24px}.details-page .conditions-card{height:auto;padding:28px 30px}.section-heading-inline{display:flex;align-items:center;justify-content:space-between;gap:18px}.section-heading-inline .eyebrow{display:block}.source-badge{font-size:10px;letter-spacing:.5px;color:#416b62;background:#e5eee8;border:1px solid #d2e2d9;border-radius:30px;padding:7px 12px;white-space:nowrap}.weather-row{display:grid;grid-template-columns:200px 1fr;align-items:center;gap:30px}.metric-label{font-size:11px;color:var(--muted)}.weather-highlight{border-right:1px solid var(--line);padding-right:24px}.weather-highlight .primary-value{font-size:44px;margin:4px 0}.weather-highlight .primary-caption{font-size:12px;margin:0}.weather-row .metrics{grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}.weather-row .metrics dd{font-size:21px}.comparison-heading{display:flex;justify-content:space-between;gap:32px;align-items:end;padding:12px 0 0}.comparison-heading .eyebrow{margin:0 0 10px}.comparison-heading h2{font:400 32px Georgia,serif;margin:0;letter-spacing:-.6px}.comparison-heading>p{max-width:390px;font-size:12px;color:var(--muted);margin:0}.sea-panel{background:#edf4f0}.ipma-panel{background:#fff}.comparison-metrics{grid-template-columns:repeat(4,minmax(0,1fr));gap:0}.comparison-metrics>div{padding:8px 24px;border-right:1px solid var(--line)}.comparison-metrics>div:first-child{padding-left:0}.comparison-metrics>div:last-child{border-right:0}.comparison-metrics dd,.comparison-metrics dd.primary-value{font:400 clamp(20px,2.1vw,29px) Georgia,serif;letter-spacing:-.6px;line-height:1.35;margin-top:10px}.comparison-metrics dt{min-height:34px;display:flex;align-items:center;font-size:12px}.marine-extras{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-top:22px}.marine-extras .metric-group{font-size:10px;letter-spacing:1.5px;margin-top:0;padding-top:18px}.marine-extras .metrics{grid-template-columns:repeat(3,1fr)}.marine-extras dd{font-size:17px}.details-page .update-note{border-top:1px solid var(--line);padding-top:16px;margin-top:24px}.ipma-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}.day-filters{display:flex;flex-wrap:wrap;background:#eef3ef;border:1px solid var(--line);border-radius:8px;padding:4px;gap:4px}.day-filters button{font:inherit;font-size:12px;border:0;background:transparent;color:var(--muted);padding:10px 17px;border-radius:5px;cursor:pointer}.day-filters button[aria-pressed=true]{background:var(--ink);color:#fff;box-shadow:0 2px 5px #173f481a}.day-filters button:disabled{cursor:wait}.ipma-toolbar .btn{font-size:11px;padding:9px 13px}.details-page .ipma-date{margin:0 0 15px;font-size:11px}.ipma-total{margin:20px 0 0;padding:14px 16px;background:#f5f7f3;border-radius:5px;font-size:12px;color:#49665e}.comparison-note{font-size:11px;color:var(--muted);padding-top:18px;border-top:1px solid var(--line);margin:22px 0 0;line-height:1.8}.ipma-forecast+.ipma-forecast{border-top:1px solid var(--line);padding-top:22px;margin-top:22px}@media(max-width:1000px){.weather-row{grid-template-columns:170px 1fr;gap:20px}.weather-row .metrics{grid-template-columns:repeat(3,1fr);gap:20px}.comparison-metrics>div{padding-left:14px;padding-right:14px}.comparison-heading>p{max-width:300px}}@media(max-width:700px){.details-page .conditions-card{padding:22px}.section-heading-inline{align-items:flex-start}.section-heading-inline h2{font-size:24px}.source-badge{font-size:8px;padding:5px 8px}.weather-row{grid-template-columns:1fr}.weather-highlight{border:0;border-bottom:1px solid var(--line);padding:0 0 18px}.weather-row .metrics{grid-template-columns:repeat(2,1fr)}.comparison-heading{display:block}.comparison-heading h2{font-size:28px}.comparison-heading>p{max-width:none;margin-top:14px}.comparison-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 16px}.comparison-metrics>div,.comparison-metrics>div:first-child{border:0;padding:0}.comparison-metrics dd,.comparison-metrics dd.primary-value{font-size:24px}.marine-extras{grid-template-columns:1fr;gap:20px}.ipma-toolbar{align-items:flex-start;flex-direction:column}.day-filters{width:100%}.day-filters button{flex:1;padding:10px 8px;font-size:11px}}
+
+
+/* Fotografias locais no topo dos cartões do catálogo. */
+.card-landscape {
+    /* Dá mais espaço à fotografia do que o cabeçalho ilustrado original. */
+    height: 180px;
+}
+
+.card-landscape .region-photo {
+    /* Preenche a largura e a altura do cabeçalho. */
+    width: 100%;
+    height: 100%;
+    /* Recorta o excedente e centra a fotografia, preservando as suas proporções. */
+    object-fit: cover;
+    object-position: center;
+    /* Evita a margem de alinhamento das imagens e coloca a fotografia sobre as ondas em CSS. */
+    display: block;
+    position: relative;
+    z-index: 1;
+}
+
+/* Quando a fotografia estiver disponível, oculta as ondas decorativas anteriores. */
+.card-landscape.has-photo::before,
+.card-landscape.has-photo::after {
+    display: none;
+}

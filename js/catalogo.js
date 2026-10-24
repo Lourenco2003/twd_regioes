@@ -35,6 +35,56 @@
             .toLowerCase();
     }
 
+    // Associa o nome de cada região à fotografia que existe na pasta images.
+    // Esta tabela escolhe apenas as imagens: a lista de regiões continua a vir da API do IPMA.
+    // As chaves estão em minúsculas e sem acentos, como o resultado de normalizar().
+    const imagensRegioes = {
+        faro: 'surf_faro.jpg',
+        'figueira da foz': 'surf_figueira-da-foz.jpg',
+        funchal: 'surf_funchal.jpg',
+        horta: 'surf_horta.jpg',
+        lisboa: 'surf_lisboa.jpg',
+        'ponta delgada': 'surf_ponta_delgada.jpg',
+        porto: 'surf_porto.jpg',
+        'porto santo': 'surf_porto_santo.jpg',
+        sagres: 'surf_sagres.jpg',
+        'santa cruz das flores': 'surf_santa_cruz_das_flores.jpg',
+        sines: 'surf_sines.jpg',
+        'viana do castelo': 'surf_viana_do_castelo.jpg',
+    };
+
+    // Coloca a fotografia correspondente no cabeçalho do cartão.
+    function colocarFotografia(paisagem, regiao) {
+        // Retira o sufixo Costa e normaliza o nome para procurar a fotografia na tabela.
+        const nomeRegiao = normalizar(regiao.local.replace(/,\s*Costa\s*$/i, '').trim());
+        // Obtém o nome exato do ficheiro, incluindo hífen ou sublinhado quando existe.
+        const ficheiro = imagensRegioes[nomeRegiao];
+        // Se o IPMA acrescentar um local sem fotografia, mantém a ilustração original em CSS.
+        if (!ficheiro) return;
+
+        // Cria uma imagem local para preencher o topo do cartão.
+        const imagem = document.createElement('img');
+        // Aplica o estilo que ajusta a fotografia ao espaço disponível sem a distorcer.
+        imagem.className = 'region-photo';
+        // A fotografia é decorativa: o nome da região já aparece no título do cartão.
+        imagem.alt = '';
+        // Carrega a fotografia apenas quando o cartão se aproxima da área visível.
+        imagem.loading = 'lazy';
+        // Permite ao navegador descodificar a imagem sem bloquear a apresentação do conteúdo.
+        imagem.decoding = 'async';
+        // Esconde as ondas em CSS apenas depois de a fotografia carregar com sucesso.
+        imagem.addEventListener('load', () => paisagem.classList.add('has-photo'));
+        // Se o ficheiro não carregar, remove a imagem para deixar visível a ilustração alternativa.
+        imagem.addEventListener('error', () => {
+            imagem.remove();
+            paisagem.classList.remove('has-photo');
+        });
+        // Constrói o caminho relativo à página catalogo.html, usando a pasta images.
+        imagem.src = `images/${ficheiro}`;
+        // Insere a fotografia na área do cabeçalho deste cartão.
+        paisagem.append(imagem);
+    }
+
     // Filtra os locais pela pesquisa e constrói os cartões do catálogo a partir dos dados do IPMA.
     function apresentarRegioes() {
         // Remove o conteúdo anterior de lista para preparar a nova apresentação.
@@ -72,6 +122,8 @@
             paisagem.className = `card-landscape${Number(regiao.idRegiao) > 1 ? ' islands' : ''}`;
             // Oculta paisagem dos leitores de ecrã porque este elemento é apenas decorativo.
             paisagem.setAttribute('aria-hidden', 'true');
+            // Seleciona e insere a fotografia associada ao nome desta região.
+            colocarFotografia(paisagem, regiao);
             // Cria o elemento 'div' e guarda-o em corpo; ainda não é visível até ser inserido no
             // documento.
             const corpo = document.createElement('div');

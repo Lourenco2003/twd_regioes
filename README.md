@@ -26,6 +26,7 @@ Abrir `http://localhost:8000`. É necessária Internet para consultar as APIs e 
 - `images/`: fotografias e ícone locais.
 - `tests/`: testes opcionais de desenvolvimento; instruções em `tests/README.md`.
 - `relatorio/Relatorio_Searching.docx`: relatório Word revisto, com os campos de identificação por preencher.
+- `apresentacao/Apresentacao_Searching.pptx`: apresentação editável, com oito diapositivos e notas de apoio.
 
 ## Dados
 

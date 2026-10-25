@@ -141,7 +141,7 @@ class Aplicacao(unittest.TestCase):
     def test_utilitarios(self):
         self.page.goto(BASE + '/catalogo.html')
         resultado = self.page.evaluate('''async () => {
-            const u = window.MarUtils;
+            const u = window;
             return [u.grausParaDirecao(360), u.grausParaDirecao(-45),
                 u.grausParaDirecao(null), u.formatarValor(null), u.formatarValor(0, 'mm'),
                 u.indiceHoraAtual([100, 3700, 7300], 4000),
@@ -275,6 +275,40 @@ class Aplicacao(unittest.TestCase):
         self.page.wait_for_function("document.querySelector('#tempo').textContent.includes('18 °C')")
         caixa = self.page.locator('.region-figure').bounding_box()
         self.assertGreater(caixa['height'], 0)
+
+    def test_atualizacao_espera_por_todas_as_fontes(self):
+        pedidos_mar = []
+        self.page.route('https://marine-api.open-meteo.com/**', lambda rota: pedidos_mar.append(rota))
+        self.page.goto(BASE + DETALHES)
+        self.page.wait_for_function("document.querySelector('#tempo').textContent.includes('18 °C')")
+        self.page.locator('#dados-ipma .comparison-metrics').wait_for()
+        self.assertTrue(self.page.locator('#atualizar').is_disabled())
+        self.assertEqual(len(pedidos_mar), 1)
+        self.responder(pedidos_mar[0], {}, 503)
+        self.page.locator('#mar .error-panel').wait_for()
+        self.page.wait_for_function("!document.querySelector('#atualizar').disabled")
+        self.page.unroute('https://marine-api.open-meteo.com/**')
+        self.page.route('https://marine-api.open-meteo.com/**', self.mar)
+        self.page.locator('#atualizar').click()
+        self.page.wait_for_function("document.querySelector('#mar').textContent.includes('1,8 m')")
+        self.page.wait_for_function("!document.querySelector('#atualizar').disabled")
+
+    def test_atualizacao_preserva_o_dia_do_ipma(self):
+        pedidos = []
+        def ipma(rota):
+            pedidos.append(rota.request.url)
+            self.ipma(rota)
+        self.page.route('https://api.ipma.pt/**', ipma)
+        self.page.goto(BASE + DETALHES)
+        self.page.wait_for_function("!document.querySelector('#atualizar').disabled")
+        self.page.locator('[data-dia="2"]').click()
+        self.page.wait_for_function("!document.querySelector('#atualizar').disabled")
+        self.page.locator('#atualizar').click()
+        self.page.wait_for_function("!document.querySelector('#atualizar').disabled")
+        self.assertIn('day0.json', pedidos[0])
+        self.assertIn('day2.json', pedidos[-2])
+        self.assertIn('day2.json', pedidos[-1])
+        self.assertEqual(self.page.locator('[data-dia="2"]').get_attribute('aria-pressed'), 'true')
 
     def test_responsividade(self):
         for largura in [390, 768, 1440]:

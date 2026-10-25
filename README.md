@@ -1,4 +1,4 @@
-# Estado do Mar Portugal
+# Searching
 
 Aplicação académica para consultar o tempo e o mar na costa portuguesa. Usa HTML, CSS, JavaScript puro, Bootstrap 5 por CDN e Fetch API. Não precisa de npm, backend, base de dados ou chaves de API.
 
@@ -51,3 +51,11 @@ As fotografias da galeria são definidas em `galeria.html`. O carrossel não ava
 Respeitar as condições de utilização e os limites dos fornecedores. As previsões não substituem os avisos oficiais ou a avaliação das condições locais.
 
 Nos detalhes, cada região apresenta a fotografia à esquerda e o texto à direita. As fotografias usam a mesma área de **480 × 360 px** no computador, com proporção **4:3** adaptada a ecrãs menores. `object-fit: cover` recorta sem deformar. Os textos são descrições gerais da região, independentes das previsões das APIs.
+
+## Como ler o JavaScript
+
+Os ficheiros usam código direto, sem funções executadas imediatamente nem objetos como `window.MarUtils`. As funções são declaradas com `function`, as listas são percorridas com `for` e as decisões usam `if/else`. `const` guarda referências que não são reatribuídas e `let` é usado para valores que mudam.
+
+Nos ficheiros de cada página, as últimas linhas associam os botões às funções e iniciam o carregamento. O atributo `defer` no HTML garante que os elementos da página já existem quando o JavaScript é executado. No catálogo e nos detalhes, `regioes.js` e `utils.js` são carregados antes do ficheiro da página.
+
+`fetch` obtém os dados das APIs. `async` permite usar `await` para esperar por uma resposta, e `try/catch` trata os erros. O cancelamento após 20 segundos usa `AbortController`. Nos detalhes, um contador mantém o botão de atualização desativado até todas as consultas terminarem.

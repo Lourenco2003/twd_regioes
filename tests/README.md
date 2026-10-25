@@ -18,3 +18,5 @@ As respostas IPMA/Open-Meteo são simuladas exclusivamente nos testes. Verificam
 A galeria é verificada quanto a navegação pelos botões, passagem circular da primeira para a última imagem, indicadores, setas do teclado, acesso ao catálogo, adaptação a ecrãs entre 320 e 1440 px e recuperação quando uma imagem não carrega.
 
 Os detalhes das 12 regiões são verificados quanto a texto próprio, fotografia correspondente e tamanho uniforme de 480 × 360 px no computador, com proporção 4:3 em ecrãs menores.
+
+Também é verificado que o botão geral espera pelas três consultas e que atualizar os dados mantém o dia selecionado no IPMA.

@@ -1,0 +1,101 @@
+Relatório do Miniprojeto M1B — Searching
+
+1. Identificação do estudante e URL do trabalho
+
+Nome: [Inserir nome completo]
+
+Número de estudante: [Inserir número]
+
+Unidade curricular: TDW — Módulo M1B
+
+URL do website: [Inserir endereço do website publicado]
+
+Repositório: https://github.com/Lourenco2003/twd_regioes
+
+O Searching é um website que permite consultar as condições do tempo e do mar em várias regiões costeiras portuguesas.
+
+O objetivo foi aplicar os conhecimentos de JavaScript adquiridos no módulo, utilizando dados de APIs para construir páginas dinâmicas. O website segue uma estrutura master-detail: apresenta primeiro um catálogo de regiões e, depois de selecionar uma delas, mostra uma página com informação mais detalhada.
+
+2. Elementos dinâmicos implementados
+
+O website está organizado em quatro páginas: Início, Catálogo, Detalhes e Galeria.
+
+A página inicial apresenta o tema do projeto e inclui um botão que encaminha o utilizador para o catálogo.
+
+No catálogo, as regiões são carregadas automaticamente através da API do IPMA. Para cada local, o JavaScript cria um cartão com o nome, as coordenadas, uma fotografia e um botão para consultar as condições. Existe também uma pesquisa que permite filtrar as regiões pelo nome, sem distinguir maiúsculas, minúsculas ou acentos. O número de resultados é atualizado durante a pesquisa.
+
+Ao selecionar uma região, o utilizador acede à página de detalhes. Esta apresenta uma fotografia, um pequeno texto sobre o local e três secções de informação:
+
+Atmosfera: temperatura, humidade, precipitação, estado do tempo, velocidade e direção do vento e rajadas, através da Open-Meteo Weather.
+
+Mar — Open-Meteo: altura, direção e período das ondas, ondulação de fundo (swell), ondas provocadas pelo vento e temperatura da água, quando disponível.
+
+Mar — IPMA: previsão marítima oficial, apresentada através de intervalos de valores. A previsão de hoje é carregada automaticamente, podendo o utilizador escolher amanhã ou depois de amanhã.
+
+A disposição das duas secções marítimas facilita a comparação entre as fontes.
+
+A galeria contém um carrossel com treze fotografias. O utilizador pode mudar de imagem através das setas, dos indicadores ou do teclado. A legenda identifica a região associada à fotografia.
+
+3. Estratégia de implementação geral
+
+O projeto foi desenvolvido com HTML5, CSS, JavaScript puro e Bootstrap 5. Não utiliza backend, base de dados ou sistema de autenticação, podendo funcionar num servidor estático.
+
+O código foi separado por responsabilidade. Os ficheiros HTML definem a estrutura das páginas, o CSS controla a apresentação e os ficheiros JavaScript gerem os dados e as interações.
+
+Cada página dinâmica possui o seu ficheiro JavaScript, com funções tradicionais declaradas através de function. Os ficheiros são carregados com defer, para executar o código depois de o HTML estar disponível. As funções comuns, como obter dados, formatar valores e apresentar mensagens de erro, estão reunidas em utils.js. As descrições e as fotografias das regiões estão organizadas em regioes.js.
+
+Os pedidos às APIs utilizam fetch(), com funções assíncronas e await. As respostas em JSON são transformadas em objetos JavaScript, permitindo selecionar os dados necessários e apresentá-los na página.
+
+Foram utilizados arrays de objetos para organizar as regiões e os seus conteúdos. Os ciclos for percorrem as listas e criam os cartões, enquanto as condições if/else permitem pesquisar regiões, validar dados e tratar situações sem informação. A ordenação alfabética utiliza o método sort().
+
+A interface adapta-se a computadores, tablets e telemóveis. As fotografias apresentam dimensões uniformes em cada área do website, evitando diferenças de tamanho que prejudiquem a organização visual.
+
+4. Principais desafios técnicos e respetivas soluções
+
+Associar os dados das diferentes APIs
+
+Um dos principais desafios foi relacionar a região escolhida com a informação das várias fontes. O IPMA e a Open-Meteo não apresentam os dados com a mesma estrutura.
+
+A solução foi utilizar as coordenadas fornecidas pelo catálogo do IPMA para consultar a Open-Meteo. Para obter a previsão marítima oficial, são utilizados os identificadores da região. Estes dados são enviados para a página de detalhes através da URL e lidos com URLSearchParams.
+
+Selecionar os dados correspondentes à hora atual
+
+A API marítima da Open-Meteo devolve listas de valores horários. Por isso, foi necessário identificar qual dos valores deveria ser apresentado.
+
+A aplicação seleciona a hora mais recente que não esteja no futuro e que tenha menos de duas horas de diferença relativamente ao momento da consulta. Foram utilizados timestamps Unix para comparar os instantes. A data e a hora são apresentadas de acordo com o fuso da região, incluindo os Açores.
+
+Apresentar previsões com períodos diferentes
+
+A Open-Meteo apresenta valores horários, enquanto o IPMA disponibiliza intervalos previstos para um dia. Assim, os resultados não representam exatamente o mesmo período.
+
+Para tornar essa diferença clara, o website identifica a fonte e a hora ou data da previsão. As medidas aparecem numa ordem semelhante nas duas secções, permitindo comparar as tendências sem tratar os valores como equivalentes.
+
+Lidar com erros e informação indisponível
+
+As APIs podem falhar ou não disponibilizar todas as variáveis. Para evitar páginas vazias, os pedidos são tratados com try...catch, sendo apresentada uma mensagem com a possibilidade de tentar novamente.
+
+Quando um valor não está disponível, aparece «N/D». Desta forma, a ausência de informação não é confundida com um valor igual a zero.
+
+Os pedidos possuem um limite de vinte segundos. As consultas às três fontes são independentes, permitindo continuar a apresentar os dados disponíveis mesmo quando uma delas falha.
+
+5. Utilização de inteligência artificial
+
+A inteligência artificial foi utilizada como apoio na pesquisa de APIs, no esclarecimento de dúvidas técnicas e na implementação de algumas funcionalidades. Também contribuiu com sugestões para o design e a organização visual do website, ajustadas aos objetivos do projeto e às preferências do estudante.
+
+6. Obstáculos não ultrapassados
+
+Não foi possível concluir a integração dos dados da Agência Portuguesa do Ambiente (APA).
+
+No recurso identificado para o projeto, a informação estava disponível em ficheiros para descarregar, em vez de um endereço de consulta direta que devolvesse JSON, como acontece nas outras APIs utilizadas.
+
+A integração exigiria preparar esses ficheiros, selecionar os campos necessários e relacionar os seus registos com as regiões do website. Seria também necessário definir uma forma de atualizar os dados. Esse processo não foi implementado nesta versão.
+
+Como resultado, a aplicação não apresenta informação da APA sobre águas balneares. Uma possível melhoria seria converter os ficheiros disponibilizados pela entidade para JSON, permitindo a sua leitura pelo website e indicando a data de atualização.
+
+7. Conclusões
+
+O Searching permitiu aplicar os conteúdos do módulo num website com informação dinâmica e uma utilização prática. O projeto reúne dados de diferentes fontes e apresenta-os numa navegação simples, desde a escolha da região até à consulta das suas condições.
+
+O desenvolvimento envolveu pedidos a APIs, tratamento de respostas JSON, utilização de arrays e objetos, estruturas de decisão, ciclos e atualização das páginas com JavaScript, com apoio de inteligência artificial.
+
+O trabalho demonstrou também a importância de tratar erros e explicar as diferenças entre as fontes consultadas. Como melhoria futura, destaca-se a integração dos dados da APA, para complementar a informação meteorológica e marítima já disponível.

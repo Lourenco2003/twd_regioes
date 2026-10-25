@@ -1,10 +1,10 @@
 // Funções usadas por várias páginas.
-'use strict';
 
 const API_IPMA = 'https://api.ipma.pt/open-data/';
 
 // Faz um pedido e lê a resposta JSON. Cancela-o se demorar mais de 20 segundos.
 async function obterJSON(url) {
+    // Permite cancelar o pedido ao atingir o tempo limite.
     const controlador = new AbortController();
     const limite = setTimeout(function () {
         controlador.abort();
@@ -23,6 +23,7 @@ async function obterJSON(url) {
         const dados = await resposta.json();
         return dados;
     } finally {
+        // Remove o temporizador quando o pedido termina, mesmo que falhe.
         clearTimeout(limite);
     }
 }
@@ -153,6 +154,7 @@ function formatarData(tempo, fuso) {
     }
 }
 
+// Limpa a área e informa que os dados estão a carregar.
 function mostrarCarregamento(elemento) {
     elemento.textContent = '';
     const texto = document.createElement('p');

@@ -1,6 +1,6 @@
 // Controlos do carrossel de fotografias.
-'use strict';
 
+// Elementos do carrossel e botões de navegação.
 const galeria = document.getElementById('galeria');
 const fotografias = document.querySelectorAll('.gallery-slide');
 const indicadores = document.querySelectorAll('[data-foto]');
@@ -9,6 +9,7 @@ const botaoSeguinte = document.getElementById('foto-seguinte');
 const contadorFotografias = document.getElementById('contador-fotos');
 let indiceAtual = 0;
 
+// Mostra uma fotografia de cada vez e atualiza os indicadores.
 function mostrarFotografia(indice) {
     // Ao ultrapassar uma ponta do carrossel, passa para a outra.
     if (indice < 0) {
@@ -40,12 +41,14 @@ function mostrarFotografiaSeguinte() {
     mostrarFotografia(indiceAtual + 1);
 }
 
+// Cada indicador guarda a posição da fotografia no atributo data-foto.
 function escolherFotografia(evento) {
     const botao = evento.currentTarget;
     const indice = Number(botao.getAttribute('data-foto'));
     mostrarFotografia(indice);
 }
 
+// Permite usar as setas quando o foco está no carrossel.
 function navegarComTeclado(evento) {
     if (evento.key === 'ArrowLeft') {
         evento.preventDefault();

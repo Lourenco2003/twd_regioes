@@ -25,6 +25,7 @@ Abrir `http://localhost:8000`. É necessária Internet para consultar as APIs e 
 - `css/style.css`: estilos por secção e adaptações a diferentes ecrãs.
 - `images/`: fotografias e ícone locais.
 - `tests/`: testes opcionais de desenvolvimento; instruções em `tests/README.md`.
+- `relatorio/Relatorio_Searching.docx`: relatório Word revisto, com os campos de identificação por preencher.
 
 ## Dados
 

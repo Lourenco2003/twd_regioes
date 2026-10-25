@@ -1,17 +1,20 @@
 // Carregamento, pesquisa e cartões do catálogo.
-'use strict';
 
+// Elementos da página que serão atualizados pelo JavaScript.
 const listaRegioes = document.getElementById('regioes');
 const estadoCatalogo = document.getElementById('estado');
 const pesquisaRegioes = document.getElementById('pesquisa');
 const totalRegioes = document.getElementById('total');
+// A lista começa vazia e é preenchida com os locais do IPMA.
 let regioesCatalogo = [];
 
+// Esconde as ondas em CSS quando a fotografia já está disponível.
 function mostrarFotografiaCartao(evento) {
     const imagem = evento.currentTarget;
     imagem.parentElement.classList.add('has-photo');
 }
 
+// Se a fotografia falhar, mantém a ilustração alternativa.
 function retirarFotografiaCartao(evento) {
     const imagem = evento.currentTarget;
     imagem.parentElement.classList.remove('has-photo');
@@ -43,6 +46,7 @@ function valorParaURL(valor) {
     return valor;
 }
 
+// Envia as coordenadas e os identificadores para a página de detalhes.
 function criarLinkRegiao(regiao) {
     const parametros = new URLSearchParams();
     parametros.set('lat', regiao.latitude);
@@ -105,6 +109,7 @@ function criarCartaoRegiao(regiao) {
     return coluna;
 }
 
+// Mostra apenas as regiões que correspondem à pesquisa.
 function apresentarRegioes() {
     listaRegioes.textContent = '';
     const pesquisa = normalizarNome(pesquisaRegioes.value.trim());
@@ -128,10 +133,12 @@ function apresentarRegioes() {
     }
 }
 
+// Ordena os nomes alfabeticamente em português.
 function ordenarRegioes(primeira, segunda) {
     return primeira.local.localeCompare(segunda.local, 'pt-PT');
 }
 
+// Obtém os locais, organiza a lista e apresenta os cartões.
 async function carregarRegioes() {
     estadoCatalogo.hidden = false;
     mostrarCarregamento(estadoCatalogo);

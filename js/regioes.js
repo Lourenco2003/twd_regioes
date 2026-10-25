@@ -1,5 +1,4 @@
 // Textos e fotografias das regiões. Os locais do catálogo continuam a vir do IPMA.
-'use strict';
 
 const apresentacoesRegioes = [
     {
@@ -124,6 +123,7 @@ function normalizarNome(texto) {
     return resultado;
 }
 
+// Procura a fotografia e o texto correspondentes ao nome da região.
 function obterRegiao(nome) {
     const nomePesquisa = normalizarNome(limparNomeRegiao(nome));
     for (let i = 0; i < apresentacoesRegioes.length; i++) {

@@ -1,6 +1,6 @@
 // Condições da atmosfera e do mar para a região escolhida.
-'use strict';
 
+// Lê a região e as coordenadas enviadas na URL pelo catálogo.
 const parametrosDetalhes = new URLSearchParams(location.search);
 const latTexto = parametrosDetalhes.get('lat');
 const lonTexto = parametrosDetalhes.get('lon');
@@ -14,6 +14,7 @@ if (nomeLocal === null || nomeLocal.trim() === '') {
     nomeLocal = nomeLocal.trim();
 }
 
+// Guarda as áreas e os botões que este ficheiro controla.
 const painelTempo = document.getElementById('tempo');
 const painelMar = document.getElementById('mar');
 const botaoAtualizar = document.getElementById('atualizar');
@@ -35,11 +36,13 @@ function terminarPedido() {
     }
 }
 
+// Mantém o espaço da fotografia e mostra uma mensagem de erro.
 function tratarErroImagemRegiao() {
     document.getElementById('imagem-regiao').hidden = true;
     document.getElementById('erro-imagem-regiao').hidden = false;
 }
 
+// Preenche a fotografia, a zona geográfica e o texto da região.
 function apresentarRegiao() {
     const regiao = obterRegiao(nomeLocal);
     const imagem = document.getElementById('imagem-regiao');
@@ -66,6 +69,7 @@ function criarURL(base) {
     return base + '?' + parametros.toString();
 }
 
+// Cria um elemento com classes CSS e conteúdo de texto.
 function criarElemento(tag, classe, texto) {
     const elemento = document.createElement(tag);
     elemento.className = classe;
@@ -87,6 +91,7 @@ function criarMetricas(pares) {
     return lista;
 }
 
+// Identifica a hora dos dados e a API que os forneceu.
 function criarNotaAtualizacao(hora, fuso, fonte) {
     let nomeFuso = fuso;
     if (!nomeFuso) {
@@ -96,6 +101,7 @@ function criarNotaAtualizacao(hora, fuso, fonte) {
     return criarElemento('p', 'update-note', texto);
 }
 
+// Consulta a Open-Meteo e preenche a secção da atmosfera.
 async function carregarTempo() {
     iniciarPedido();
     mostrarCarregamento(painelTempo);
@@ -177,6 +183,7 @@ async function obterDadosMar() {
     }
 }
 
+// Lê uma medida na hora escolhida; devolve null se não existir.
 function obterValorMar(dados, campo, indice) {
     if (indice < 0) {
         return null;
@@ -187,6 +194,7 @@ function obterValorMar(dados, campo, indice) {
     return dados.hourly[campo][indice];
 }
 
+// Cria o grupo do swell ou das ondas provocadas pelo vento.
 function criarGrupoOndas(dados, indice, titulo, prefixo) {
     const altura = obterValorMar(dados, prefixo + '_height', indice);
     const periodo = obterValorMar(dados, prefixo + '_period', indice);
@@ -203,6 +211,7 @@ function criarGrupoOndas(dados, indice, titulo, prefixo) {
     return grupo;
 }
 
+// Escolhe a hora atual disponível e apresenta os dados marítimos.
 async function carregarMar() {
     iniciarPedido();
     mostrarCarregamento(painelMar);
@@ -262,6 +271,7 @@ function valorIPMA(valor) {
     return null;
 }
 
+// Apresenta o mínimo e o máximo com a respetiva unidade.
 function intervaloIPMA(minimo, maximo, unidade) {
     const primeiro = formatarValor(valorIPMA(minimo), unidade);
     const segundo = formatarValor(valorIPMA(maximo), unidade);
@@ -287,6 +297,7 @@ function formatarDataIPMA(data) {
     return data.substring(8, 10) + '/' + data.substring(5, 7) + '/' + data.substring(0, 4);
 }
 
+// Organiza a previsão oficial na mesma ordem das medidas da Open-Meteo.
 function criarCartaoIPMA(registo) {
     let direcao = 'N/D';
     if (typeof registo.predWaveDir === 'string' && registo.predWaveDir.trim() !== '') {
@@ -334,6 +345,7 @@ function apresentarIPMA(painel, dados, registos) {
     }
 }
 
+// Bloqueia os filtros durante a consulta e identifica o dia selecionado.
 function atualizarFiltrosIPMA(desativar) {
     for (let i = 0; i < filtrosIPMA.length; i++) {
         const filtro = filtrosIPMA[i];
@@ -347,6 +359,7 @@ function atualizarFiltrosIPMA(desativar) {
     }
 }
 
+// Consulta o dia escolhido e apresenta apenas os registos da região.
 async function consultarIPMA() {
     const painel = document.getElementById('dados-ipma');
     const idGlobal = parametrosDetalhes.get('id');
@@ -392,6 +405,7 @@ async function consultarIPMA() {
     }
 }
 
+// O atributo data-dia do botão indica hoje, amanhã ou depois de amanhã.
 function escolherDiaIPMA(evento) {
     diaIPMA = Number(evento.currentTarget.getAttribute('data-dia'));
     consultarIPMA();
